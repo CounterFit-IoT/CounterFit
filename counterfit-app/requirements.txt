@@ -1,0 +1,6 @@
+flask
+flask-socketio
+eventlet
+setuptools
+twine
+wheel

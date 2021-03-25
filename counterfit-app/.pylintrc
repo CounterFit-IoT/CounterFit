@@ -1,0 +1,12 @@
+[FORMAT]
+
+# Maximum number of characters on a single line.
+max-line-length=140
+
+[DESIGN]
+
+# Maximum number of attributes for a class (see R0902).
+max-attributes=13
+
+[MESSAGES CONTROL]
+disable=trailing-whitespace,R0801,C0114,C0115,C0116

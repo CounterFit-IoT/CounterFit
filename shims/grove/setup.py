@@ -19,7 +19,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Jim Bennett',
-    url="https://github.com/jimbobbennett/CounterFit",
+    url="https://github.com/CounterFit-IoT/CounterFit",
     license='MIT',
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",

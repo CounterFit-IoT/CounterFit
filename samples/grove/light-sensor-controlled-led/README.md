@@ -30,7 +30,7 @@ This sample shows how to use the CounterFit Grove shims to simulate an LED and a
     pip install -r requirements.txt
     ```
 
-This will install the [CounterFit](https://github.com/jimbobbennett/CounterFit/tree/main/counterfit-app) app and the [CounterFit Grove Shims](https://github.com/jimbobbennett/CounterFit/tree/main/shims/grove).
+This will install the [CounterFit](https://github.com/CounterFit-IoT/CounterFit/tree/main/counterfit-app) app and the [CounterFit Grove Shims](https://github.com/CounterFit-IoT/CounterFit/tree/main/shims/grove).
 
 ## Configure the hardware
 

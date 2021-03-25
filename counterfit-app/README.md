@@ -37,4 +37,4 @@ CounterFit --port 5050
 
 ## Connecting your code
 
-You can connect your device code to CounterFit, using one of the available shims. See the [shim list for more details](https://github.com/jimbobbennett/CounterFit#shims).
+You can connect your device code to CounterFit, using one of the available shims. See the [shim list for more details](https://github.com/CounterFit-IoT/CounterFit#shims).

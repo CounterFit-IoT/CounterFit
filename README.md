@@ -1,14 +1,14 @@
 # CounterFit
 
-[![GitHub license](https://img.shields.io/github/license/JimBobBennett/CounterFit.svg)](https://github.com/JimBobBennett/CounterFit/blob/master/LICENSE)
-[![GitHub contributors](https://img.shields.io/github/contributors/JimBobBennett/CounterFit.svg)](https://GitHub.com/JimBobBennett/CounterFit/graphs/contributors/)
-[![GitHub issues](https://img.shields.io/github/issues/JimBobBennett/CounterFit.svg)](https://GitHub.com/JimBobBennett/CounterFit/issues/)
-[![GitHub pull-requests](https://img.shields.io/github/issues-pr/JimBobBennett/CounterFit.svg)](https://GitHub.com/JimBobBennett/CounterFit/pull/)
+[![GitHub license](https://img.shields.io/github/license/CounterFit-IoT/CounterFit.svg)](https://github.com/CounterFit-IoT/CounterFit/blob/master/LICENSE)
+[![GitHub contributors](https://img.shields.io/github/contributors/CounterFit-IoT/CounterFit.svg)](https://GitHub.com/CounterFit-IoT/CounterFit/graphs/contributors/)
+[![GitHub issues](https://img.shields.io/github/issues/CounterFit-IoT/CounterFit.svg)](https://GitHub.com/CounterFit-IoT/CounterFit/issues/)
+[![GitHub pull-requests](https://img.shields.io/github/issues-pr/CounterFit-IoT/CounterFit.svg)](https://GitHub.com/CounterFit-IoT/CounterFit/pull/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-[![GitHub watchers](https://img.shields.io/github/watchers/JimBobBennett/CounterFit.svg?style=social&label=Watch&maxAge=2592000)](https://GitHub.com/JimBobBennett/CounterFit/watchers/)
-[![GitHub forks](https://img.shields.io/github/forks/JimBobBennett/CounterFit.svg?style=social&label=Fork&maxAge=2592000)](https://GitHub.com/JimBobBennett/CounterFit/network/)
-[![GitHub stars](https://img.shields.io/github/stars/JimBobBennett/CounterFit.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/JimBobBennett/CounterFit/stargazers/)
+[![GitHub watchers](https://img.shields.io/github/watchers/CounterFit-IoT/CounterFit.svg?style=social&label=Watch&maxAge=2592000)](https://GitHub.com/CounterFit-IoT/CounterFit/watchers/)
+[![GitHub forks](https://img.shields.io/github/forks/CounterFit-IoT/CounterFit.svg?style=social&label=Fork&maxAge=2592000)](https://GitHub.com/CounterFit-IoT/CounterFit/network/)
+[![GitHub stars](https://img.shields.io/github/stars/CounterFit-IoT/CounterFit.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/CounterFit-IoT/CounterFit/stargazers/)
 
 ![The CounterFit logo](./images/CounterFitLogo.png)
 

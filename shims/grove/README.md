@@ -2,13 +2,13 @@
 
 ![Grove Shim](https://img.shields.io/badge/Platform-Python-green) [![PyPI](https://img.shields.io/pypi/v/counterfit-shims-grove)](https://pypi.org/project/counterfit-shims-grove)
 
-Shims for the Seeed grove sensors and actuators to use with the [CounterFit virtual IoT device app](https://github.com/jimbobbennett/CounterFit).
+Shims for the Seeed grove sensors and actuators to use with the [CounterFit virtual IoT device app](https://github.com/CounterFit-IoT/CounterFit).
 
 See the [Grove Py Docs](https://github.com/Seeed-Studio/grove.py) for the API documentation.
 
 ## Getting started
 
-To use these shims, you will need to install [CounterFit](https://github.com/jimbobbennett/CounterFit) and have it running, with the appropriate hardware created.
+To use these shims, you will need to install [CounterFit](https://github.com/CounterFit-IoT/CounterFit) and have it running, with the appropriate hardware created.
 
 * Install this package from pip:
 

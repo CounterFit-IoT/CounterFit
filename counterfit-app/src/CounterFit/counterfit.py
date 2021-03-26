@@ -18,6 +18,8 @@ actuator_cache = {}
 all_sensors = []
 all_actuators = []
 
+is_connected = False
+
 def get_all_subclasses(cls, class_list):
     for sub_class in cls.__subclasses__():
         if len(sub_class.__abstractmethods__) == 0:
@@ -43,16 +45,29 @@ def home():
                            actuators=actuator_cache.values(), 
                            all_sensors=all_sensors,
                            all_actuators=all_actuators,
+                           is_connected = is_connected,
                            pins=pins)
+
+def set_and_send_connected(connected:bool = True) -> None:
+    global is_connected
+    is_connected = connected
+    socketio.emit('device_connect', {'connected' : is_connected})
 
 @app.route('/connect', methods=['POST'])
 def device_connect():
-    socketio.emit('device_connect')
+    set_and_send_connected()
+
+    return 'OK', 200
+
+@app.route('/disconnect', methods=['POST'])
+def device_disconnect():
+    set_and_send_connected(False)
 
     return 'OK', 200
 
 @app.route('/create_sensor', methods=['POST'])
 def create_sensor():
+    set_and_send_connected()
     body = request.get_json()
 
     print("Create sensor called:", body)
@@ -74,6 +89,7 @@ def create_sensor():
 
 @app.route('/create_actuator', methods=['POST'])
 def create_actuator():
+    set_and_send_connected()
     body = request.get_json()
 
     print("Create actuator called:", body)
@@ -91,6 +107,7 @@ def create_actuator():
 
 @app.route('/sensor_value', methods=['GET'])
 def get_sensor_value():
+    set_and_send_connected()
     pin = int(request.args.get('pin', ''))
     if pin in sensor_cache:
         sensor = sensor_cache[pin]
@@ -104,6 +121,7 @@ def get_sensor_value():
 
 @app.route('/delete_sensor', methods=['POST'])
 def delete_sensor():
+    set_and_send_connected()
     body = request.get_json()
 
     print("Delete sensor called:", body)
@@ -117,6 +135,7 @@ def delete_sensor():
 
 @app.route('/delete_actuator', methods=['POST'])
 def delete_actuator():
+    set_and_send_connected()
     body = request.get_json()
 
     print("Delete actuator called:", body)
@@ -130,6 +149,7 @@ def delete_actuator():
 
 @app.route('/float_sensor_settings', methods=['POST'])
 def set_float_sensor_settings():
+    set_and_send_connected()
     body = request.get_json()
 
     print("Float sensor settings called:", body)
@@ -151,6 +171,7 @@ def set_float_sensor_settings():
 
 @app.route('/led_actuator_settings', methods=['POST'])
 def set_led_actuator_settings():
+    set_and_send_connected()
     body = request.get_json()
 
     print("LED actuator settings called:", body)
@@ -166,6 +187,7 @@ def set_led_actuator_settings():
 
 @app.route('/boolean_sensor_settings', methods=['POST'])
 def set_boolean_sensor_settings():
+    set_and_send_connected()
     body = request.get_json()
 
     print("Boolean sensor settings called:", body)
@@ -183,6 +205,7 @@ def set_boolean_sensor_settings():
 
 @app.route('/sensor_units', methods=['POST'])
 def get_sensor_units():
+    set_and_send_connected()
     body = request.get_json()
 
     print("Sensor units called:", body)
@@ -200,6 +223,7 @@ def get_sensor_units():
 
 @app.route('/actuator_value', methods=['POST'])
 def set_actuator_value():
+    set_and_send_connected()
     pin = int(request.args.get('pin', ''))
     body = request.get_json()
 

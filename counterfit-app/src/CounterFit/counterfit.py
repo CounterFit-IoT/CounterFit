@@ -45,6 +45,12 @@ def home():
                            all_actuators=all_actuators,
                            pins=pins)
 
+@app.route('/connect', methods=['POST'])
+def device_connect():
+    socketio.emit('device_connect')
+
+    return 'OK', 200
+
 @app.route('/create_sensor', methods=['POST'])
 def create_sensor():
     body = request.get_json()

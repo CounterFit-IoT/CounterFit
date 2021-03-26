@@ -35,6 +35,7 @@ class CounterFitConnection:
         Initializes the connection to the Virtual IoT Device running on the given url and port
         '''
         CounterFitConnection.base_url = f'http://{hostname}:{str(port)}/'
+        requests.post(CounterFitConnection.base_url + 'connect')
     
     @staticmethod
     def get_sensor_float_value(pin: int) -> float:

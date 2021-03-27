@@ -70,7 +70,7 @@ def create_sensor():
     set_and_send_connected()
     body = request.get_json()
 
-    print("Create sensor called:", body)
+    print('Create sensor called:', body)
     
     sensor_type = body['type']
     pin = body['pin']
@@ -94,7 +94,7 @@ def create_actuator():
     set_and_send_connected()
     body = request.get_json()
 
-    print("Create actuator called:", body)
+    print('Create actuator called:', body)
     
     actuator_type = body['type']
     pin = body['pin']
@@ -115,7 +115,7 @@ def get_sensor_value():
         sensor = sensor_cache[pin]
         
         response = {'value' : sensor.value}
-        print("Returning sensor value", response, "for pin", pin)
+        print('Returning sensor value', response, 'for pin', pin)
 
         return json.dumps(response)
     
@@ -126,7 +126,7 @@ def delete_sensor():
     set_and_send_connected()
     body = request.get_json()
 
-    print("Delete sensor called:", body)
+    print('Delete sensor called:', body)
 
     pin = body['pin']
 
@@ -140,7 +140,7 @@ def delete_actuator():
     set_and_send_connected()
     body = request.get_json()
 
-    print("Delete actuator called:", body)
+    print('Delete actuator called:', body)
 
     pin = body['pin']
 
@@ -154,7 +154,7 @@ def set_float_sensor_settings():
     set_and_send_connected()
     body = request.get_json()
 
-    print("Float sensor settings called:", body)
+    print('Float sensor settings called:', body)
     
     pin = body['pin']
     value = body['value']
@@ -176,7 +176,7 @@ def set_integer_sensor_settings():
     set_and_send_connected()
     body = request.get_json()
 
-    print("Integer sensor settings called:", body)
+    print('Integer sensor settings called:', body)
     
     pin = body['pin']
     value = body['value']
@@ -198,7 +198,7 @@ def set_led_actuator_settings():
     set_and_send_connected()
     body = request.get_json()
 
-    print("LED actuator settings called:", body)
+    print('LED actuator settings called:', body)
     
     pin = body['pin']
     color = body['color']
@@ -214,7 +214,7 @@ def set_boolean_sensor_settings():
     set_and_send_connected()
     body = request.get_json()
 
-    print("Boolean sensor settings called:", body)
+    print('Boolean sensor settings called:', body)
     
     pin = body['pin']
     value = body['value']
@@ -232,7 +232,7 @@ def get_sensor_units():
     set_and_send_connected()
     body = request.get_json()
 
-    print("Sensor units called:", body)
+    print('Sensor units called:', body)
 
     sensor_type = body['type']
 
@@ -253,7 +253,7 @@ def set_actuator_value():
     pin = int(request.args.get('pin', ''))
     body = request.get_json()
 
-    print("Actuator value called:", body)
+    print('Actuator value called:', body, 'for pin', pin)
 
     value = body['value']
 

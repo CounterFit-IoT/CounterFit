@@ -36,7 +36,7 @@ all_actuators = sorted(all_actuators, key=lambda a: a.actuator_name())
 @app.route('/', methods=['GET'])
 def home():
     pins = []
-    for pin in range(1, 19):
+    for pin in range(0, 19):
         if pin not in sensor_cache and pin not in actuator_cache:
             pins.append(pin)
 

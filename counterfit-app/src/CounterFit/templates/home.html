@@ -156,6 +156,11 @@
                                                 {% include "float_sensor.html" %}
                                             {% endwith %}
                                         {% endif %}
+                                        {% if sensor.sensor_type().name == "INTEGER": %}
+                                            {% with sensor=sensor %}
+                                                {% include "integer_sensor.html" %}
+                                            {% endwith %}
+                                        {% endif %}
                                         {% if sensor.sensor_type().name == "BOOLEAN": %}
                                             {% with sensor=sensor %}
                                                 {% include "boolean_sensor.html" %}

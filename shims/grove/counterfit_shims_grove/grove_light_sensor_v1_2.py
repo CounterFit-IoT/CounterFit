@@ -40,8 +40,8 @@ class GroveLightSensor:
         self.__pin = pin
 
     @property
-    def light(self):
+    def light(self) -> int:
         '''
         Get the light strength value, maximum value is 1000
         '''
-        return CounterFitConnection.get_sensor_float_value(self.__pin)
+        return CounterFitConnection.get_sensor_int_value(self.__pin)

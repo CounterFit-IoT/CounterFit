@@ -21,16 +21,16 @@ def init_counterfit_device():
     '''
     CounterFitConnection.init('127.0.0.1', 5000)
 
-# def test_turn_led_on(init_counterfit_device):
-#     '''
-#     Tests the on method of the Grove LED shim
-#     '''
-#     sensor = GroveLed(1)
-#     sensor.on()
+def test_turn_led_on(init_counterfit_device):
+    '''
+    Tests the on method of the Grove LED shim
+    '''
+    sensor = GroveLed(1)
+    sensor.on()
 
-# def test_turn_led_off(init_counterfit_device):
-#     '''
-#     Tests the off method of the Grove LED shim
-#     '''
-#     sensor = GroveLed(1)
-#     sensor.off()
+def test_turn_led_off(init_counterfit_device):
+    '''
+    Tests the off method of the Grove LED shim
+    '''
+    sensor = GroveLed(1)
+    sensor.off()

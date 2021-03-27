@@ -39,14 +39,14 @@ class GroveLed():
         self.__pin = pin
 
     # pylint: disable=invalid-name
-    def on(self):
+    def on(self) -> None:
         '''
         light on the led
         '''
-        return CounterFitConnection.set_actuator_boolean_value(self.__pin, True)
+        CounterFitConnection.set_actuator_boolean_value(self.__pin, True)
 
-    def off(self):
+    def off(self) -> None:
         '''
         light off the led
         '''
-        return CounterFitConnection.set_actuator_boolean_value(self.__pin, False)
+        CounterFitConnection.set_actuator_boolean_value(self.__pin, False)

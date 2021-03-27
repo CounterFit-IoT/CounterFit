@@ -80,6 +80,8 @@ def create_sensor():
         if sensor.sensor_name() == sensor_type:
             if sensor.sensor_type() == SensorType.FLOAT:
                 new_sensor = sensor(pin, unit)
+            elif sensor.sensor_type() == SensorType.INTEGER:
+                new_sensor = sensor(pin, unit)
             else:
                 new_sensor = sensor(pin)
 
@@ -169,6 +171,28 @@ def set_float_sensor_settings():
 
     return 'OK', 200
 
+@app.route('/integer_sensor_settings', methods=['POST'])
+def set_integer_sensor_settings():
+    set_and_send_connected()
+    body = request.get_json()
+
+    print("Integer sensor settings called:", body)
+    
+    pin = body['pin']
+    value = body['value']
+    is_random = body['is_random']
+    random_min = body['random_min']
+    random_max = body['random_max']
+
+    if pin in sensor_cache:
+        sensor = sensor_cache[pin]
+        sensor.value = value
+        sensor.random = is_random
+        sensor.random_min = random_min
+        sensor.random_max = random_max
+
+    return 'OK', 200
+
 @app.route('/led_actuator_settings', methods=['POST'])
 def set_led_actuator_settings():
     set_and_send_connected()
@@ -215,6 +239,8 @@ def get_sensor_units():
     for sensor in all_sensors:
         if sensor.sensor_name() == sensor_type:
             if sensor.sensor_type() == SensorType.FLOAT:
+                return {'units':sensor.sensor_units()}
+            elif sensor.sensor_type() == SensorType.INTEGER:
                 return {'units':sensor.sensor_units()}
 
             return {'units':[]}

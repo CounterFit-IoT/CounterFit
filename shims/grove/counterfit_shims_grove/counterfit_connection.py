@@ -46,6 +46,14 @@ class CounterFitConnection:
         return float(response.json()['value'])
     
     @staticmethod
+    def get_sensor_int_value(pin: int) -> int:
+        '''
+        Reads an integer value from the sensor on the given pin
+        '''
+        response = requests.get(CounterFitConnection.base_url + 'sensor_value?pin=' + str(pin))
+        return int(response.json()['value'])
+    
+    @staticmethod
     def get_sensor_boolean_value(pin: int) -> bool:
         '''
         Reads a bool value from the sensor on the given pin

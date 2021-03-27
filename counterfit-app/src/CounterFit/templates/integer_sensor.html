@@ -1,0 +1,126 @@
+<div class="card shadow-sm border-secondary" style="margin: 10px;">
+    <div class="card-header py-3 text-white bg-secondary">
+        <div class="container-fluid d-flex align-items-center">
+            <h4 class="my-0 fw-normal">{{ sensor.sensor_name() }}</h4>
+            <h4 class="my-0 fw-normal ms-auto">Pin {{sensor.pin}}</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    Units:
+                </div>
+                <div class="col">
+                    {{ sensor.unit }}
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col">
+                    Value range:
+                </div>
+                <div class="col">
+                    {{ "{:,d}".format(sensor.valid_min) }} to {{ "{:,d}".format(sensor.valid_max) }}
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col">
+                    <label for="value{{sensor.pin}}">Value:</label>
+                </div>
+                <div class="col">
+                    <input class="form-control" type="number" step="1" pattern="\d+" id="value{{sensor.pin}}" value="{{sensor.value}}" style="width: 100%;"/>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col">
+                    <label for="random{{sensor.pin}}">Random:</label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input" type="checkbox" id="random{{sensor.pin}}" value="Random"/>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col" style="text-align:center">
+                    <label for="random_min{{sensor.pin}}">Min</label>
+                </div>
+                <div class="col" style="text-align:center">
+                    <label for="random_max{{sensor.pin}}">Max</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="number" step="1" pattern="\d+" id="random_min{{sensor.pin}}" value="{{sensor.random_min}}" style="width: 100%;" disabled/>
+                </div>
+                <div class="col">
+                    <input class="form-control" type="number" step="1" pattern="\d+" id="random_max{{sensor.pin}}" value="{{sensor.random_max}}" style="width: 100%;" disabled/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <button id="sensor_set_button{{sensor.pin}}" class="w-100 btn btn-lg btn-primary">Set</button>
+                </div>
+                <div class="col">
+                    <button id="sensor_delete_button{{sensor.pin}}" class="w-100 btn btn-lg btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            var set_button = document.getElementById("sensor_set_button{{sensor.pin}}")
+            var delete_button = document.getElementById("sensor_delete_button{{sensor.pin}}")
+            var is_random_control = document.getElementById("random{{sensor.pin}}")
+            var random_min_control = document.getElementById("random_min{{sensor.pin}}")
+            var random_max_control = document.getElementById("random_max{{sensor.pin}}")
+            var value_control = document.getElementById("value{{sensor.pin}}")
+
+            is_random_control.addEventListener("change", function() {
+                value_control.disabled = is_random_control.checked
+                random_min_control.disabled = !is_random_control.checked
+                random_max_control.disabled = !is_random_control.checked
+            })
+
+            set_button.addEventListener("click", function() {
+                // get the values
+                var is_random = is_random_control.checked
+                var random_min = parseInt(random_min_control.value)
+                var random_max = parseInt(random_max_control.value)
+                var value = parseInt(value_control.value)
+
+                var payload = {
+                    'pin': {{sensor.pin}},
+                    'value': value,
+                    'is_random': is_random,
+                    'random_min': random_min,
+                    'random_max': random_max
+                }
+
+                var xhr = new XMLHttpRequest();
+                var url = "./integer_sensor_settings";
+                xhr.open("POST", url, false);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                var data = JSON.stringify(payload);
+                xhr.send(data);
+            });
+
+            delete_button.addEventListener("click", function(){
+                var payload = {
+                    'pin': {{sensor.pin}}
+                }
+
+                var xhr = new XMLHttpRequest();
+                var url = "./delete_sensor";
+                xhr.open("POST", url, false);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                var data = JSON.stringify(payload);
+                xhr.send(data);
+                location.reload();
+            });
+        })
+    </script>
+</div>

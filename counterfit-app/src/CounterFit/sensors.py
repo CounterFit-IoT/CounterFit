@@ -5,7 +5,8 @@ import random
 
 class SensorType(Enum):
     FLOAT = 1
-    BOOLEAN = 2
+    INTEGER = 2
+    BOOLEAN = 3
 
 class SensorBase(ABC):
     def __init__(self, pin:int):
@@ -109,6 +110,77 @@ class FloatSensorBase(SensorBase):
     def valid_max(self) -> float:
         return self.__valid_max
 
+class IntegerSensorBase(SensorBase):
+    def __init__(self, pin:int, valid_min:int, valid_max:int):
+
+        super().__init__(pin)
+
+        self.__valid_min = valid_min
+        self.__valid_max = valid_max
+        self.value = valid_min
+        self.random_min = int(valid_min)
+        self.random_max = int(valid_max)
+
+    @staticmethod
+    @abstractmethod
+    def sensor_name() -> str:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def sensor_units() -> List[str]:
+        pass
+
+    @property
+    @abstractmethod
+    def unit(self) -> str:
+        pass
+
+    @staticmethod
+    def sensor_type() -> SensorType:
+        return SensorType.INTEGER
+
+    @property
+    def value(self) -> int:
+        if self._random:
+            return random.randint(self.__random_min, self.__random_max)
+
+        return self.__value
+
+    @value.setter
+    def value(self, val: int):
+        if val < self.__valid_min or val > self.__valid_max:
+            raise ValueError()
+        self.__value = val
+
+    @property
+    def random_min(self) -> int:
+        return self.__random_min
+
+    @random_min.setter
+    def random_min(self, val: int):
+        if val < self.__valid_min or val > self.__valid_max:
+            raise ValueError()
+        self.__random_min = val
+
+    @property
+    def random_max(self) -> int:
+        return self.__random_max
+
+    @random_max.setter
+    def random_max(self, val: int):
+        if val < self.__valid_min or val > self.__valid_max:
+            raise ValueError()
+        self.__random_max = val
+
+    @property
+    def valid_min(self) -> int:
+        return self.__valid_min
+
+    @property
+    def valid_max(self) -> int:
+        return self.__valid_max
+
 class BooleanSensorBase(SensorBase):
     def __init__(self, pin:int):
 
@@ -198,7 +270,7 @@ class PressureSensor(FloatSensorBase):
     def sensor_units() -> List[str]:
         return [PressureUnit.kPa.name, PressureUnit.torr.name, PressureUnit.atm.name, PressureUnit.bar.name]
 
-class LightSensor(FloatSensorBase):
+class LightSensor(IntegerSensorBase):
     #pylint: disable=W0613
     def __init__(self, pin:int, unit):
 

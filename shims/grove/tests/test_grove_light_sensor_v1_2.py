@@ -23,5 +23,5 @@ def test_light_sensor_light_is_50(init_counterfit_device):
     '''
     Tests the light property of the Grove Light Sensor shim
     '''
-    sensor = GroveLightSensor(1)
-    assert sensor.light == 50.
+    sensor = GroveLightSensor(0)
+    assert sensor.light == 50

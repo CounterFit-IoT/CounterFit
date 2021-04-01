@@ -1,10 +1,10 @@
 '''
-Shims for the Seeed Grove Py library for use with the CounterFit Virtual IoT Device app
+Connection library library for use with the CounterFit Virtual IoT Device app
 '''
 
 from codecs import open
 from os import path
-from setuptools import find_packages, setup
+from setuptools import setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -12,10 +12,10 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name='counterfit_shims_grove',
-    packages=find_packages(include=['counterfit_shims_grove']),
-    version='0.1.4.dev2',
-    description='Shims for the Seeed Grove sensors for the CounterFit virtual IoT device app',
+    name='counterfit-connection',
+    py_modules=['counterfit_connection'],
+    version='0.1.0.dev1',
+    description='Connection library library for use with the CounterFit Virtual IoT Device app',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Jim Bennett',

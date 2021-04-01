@@ -9,7 +9,7 @@ on pin 1 set to a value of 50
 
 import pytest
 
-from counterfit_shims_grove.counterfit_connection import CounterFitConnection
+from counterfit_connection import CounterFitConnection
 from counterfit_shims_grove.grove_light_sensor_v1_2 import GroveLightSensor
 
 @pytest.fixture

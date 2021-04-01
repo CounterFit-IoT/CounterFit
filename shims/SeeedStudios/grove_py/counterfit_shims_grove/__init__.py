@@ -8,6 +8,5 @@ These shims don't communicate with real hardware, instead they communicate with 
 the CounterFit Virtual IoT Device app
 '''
 
-from .counterfit_connection import CounterFitConnection
 from .grove_light_sensor_v1_2 import GroveLightSensor
 from .grove_led import GroveLed

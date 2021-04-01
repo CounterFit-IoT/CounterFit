@@ -1,0 +1,7 @@
+[FORMAT]
+
+# Maximum number of characters on a single line.
+max-line-length=140
+
+[MESSAGES CONTROL]
+disable=trailing-whitespace

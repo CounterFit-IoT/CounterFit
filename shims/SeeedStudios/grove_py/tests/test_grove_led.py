@@ -11,7 +11,7 @@ Uncomment the relevant test below and run it to see the LED change state
 
 import pytest
 
-from counterfit_shims_grove.counterfit_connection import CounterFitConnection
+from counterfit_connection import CounterFitConnection
 from counterfit_shims_grove.grove_led import GroveLed
 
 @pytest.fixture

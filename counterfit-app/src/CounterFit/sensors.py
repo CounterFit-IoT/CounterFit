@@ -39,6 +39,10 @@ class SensorBase(ABC):
 class DefaultUnit(Enum):
     NoUnits = 1
 
+#pylint: disable=C0103
+class PercentUnit(Enum):
+    Percent = 1
+
 class FloatSensorBase(SensorBase):
     def __init__(self, pin:int, valid_min:float, valid_max:float):
 
@@ -241,6 +245,27 @@ class TemperatureSensor(FloatSensorBase):
     @staticmethod
     def sensor_units() -> List[str]:
         return [TemperatureUnit.Celsius.name, TemperatureUnit.Fahrenheit.name, TemperatureUnit.Kelvin.name]
+
+class HumiditySensor(FloatSensorBase):
+    def __init__(self, pin:int, unit):
+        if isinstance (unit, str):
+            unit = PercentUnit[unit]
+
+        self.__unit = unit
+
+        super().__init__(pin, 0.0, 100.0)
+
+    @staticmethod
+    def sensor_name() -> str:
+        return 'Humidity'
+
+    @property
+    def unit(self) -> str:
+        return self.__unit.name
+
+    @staticmethod
+    def sensor_units() -> List[str]:
+        return [PercentUnit.Percent.name]
 
 #pylint: disable=C0103,C0102
 class PressureUnit(Enum):

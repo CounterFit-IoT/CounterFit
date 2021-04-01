@@ -59,7 +59,9 @@ The shims are designed to mimic the APIs for popular hardware components. The id
 
 ### Available shims
 
-* ![Grove Shim](https://img.shields.io/badge/Platform-Python-green) [![Grove Shim](https://img.shields.io/badge/Shim-Grove-yellow)](./shims/grove/README.md) [![PyPI](https://img.shields.io/pypi/v/counterfit-shims-grove)](https://pypi.org/project/counterfit-shims-grove) [Grove Py](https://github.com/Seeed-Studio/grove.py) shims that work with the [Seeed Grove ecosystem](https://www.seeedstudio.com/category/Grove-c-1003.html).
+* ![Seeed Grove Py Shim](https://img.shields.io/badge/Platform-Python-green) [![Seeed Grove Py Shim](https://img.shields.io/badge/Shim-Grove.py-yellow)](./shims/SeeedStudios/grove/README.md) [![PyPI](https://img.shields.io/pypi/v/counterfit-shims-grove)](https://pypi.org/project/counterfit-shims-grove) [Grove.Py](https://github.com/Seeed-Studio/grove.py) shims that work with the [Seeed Grove ecosystem](https://www.seeedstudio.com/category/Grove-c-1003.html).
+
+* ![Seeed Grove DHT Shim](https://img.shields.io/badge/Platform-Python-green) [![Seeed DHT Shim](https://img.shields.io/badge/Shim-Seeed_DHT-yellow)](./shims/SeeedStudios/grove/README.md) [![PyPI](https://img.shields.io/pypi/v/counterfit-shims-seeed-python-dht)](https://pypi.org/project/counterfit-shims-seeed-python-dht) [Seeed DHT](https://github.com/Seeed-Studio/Seeed_Python_DHT) shims that work with the [Seeed DHT sensors](https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-DHT11.html).
 
 ## Samples
 

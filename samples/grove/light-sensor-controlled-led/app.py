@@ -1,6 +1,6 @@
 import time
 
-from counterfit_shims_grove.counterfit_connection import CounterFitConnection
+from counterfit_connection import CounterFitConnection
 from counterfit_shims_grove.grove_light_sensor_v1_2 import GroveLightSensor
 from counterfit_shims_grove.grove_led import GroveLed
 

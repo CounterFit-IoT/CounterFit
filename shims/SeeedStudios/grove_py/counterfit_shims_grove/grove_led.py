@@ -9,7 +9,7 @@ Examples:
 
     .. code-block:: python
         import time
-        from counterfit_shims_grove.counterfit_connection import CounterFitConnection
+        from counterfit_connection import CounterFitConnection
         from counterfit_shims_grove.grove_light_sensor_v1_2 import GroveLightSensor
 
         # Init the connection to the CounterFit Virtual IoT Device app
@@ -25,7 +25,7 @@ Examples:
             time.sleep(1)
 '''
 
-from .counterfit_connection import CounterFitConnection
+from counterfit_connection import CounterFitConnection
 
 __all__ = ['GroveLed']
 

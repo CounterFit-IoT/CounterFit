@@ -5,8 +5,8 @@ from threading import Timer
 from flask import Flask, request, render_template
 from flask_socketio import SocketIO
 
-from sensors import SensorBase, SensorType
-from actuators import ActuatorBase
+from .sensors import SensorBase, SensorType
+from .actuators import ActuatorBase
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '247783f3-bdda-4536-bffc-109e2464f10b'

@@ -25,6 +25,7 @@ Examples:
 '''
 # pylint: disable=too-few-public-methods
 
+# pylint: disable=import-error
 from counterfit_connection import CounterFitConnection
 
 __all__ = ['GroveLightSensor']
@@ -42,6 +43,6 @@ class GroveLightSensor:
     @property
     def light(self) -> int:
         '''
-        Get the light strength value, maximum value is 1000
+        Get the light strength value, maximum value is 1023
         '''
         return CounterFitConnection.get_sensor_int_value(self.__pin)

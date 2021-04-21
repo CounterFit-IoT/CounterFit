@@ -70,6 +70,11 @@ class BooleanActuatorBase(ActuatorBase):
     def value(self, val: bool):
         self.__value = val
 
+class RelayActuator(BooleanActuatorBase):
+    @staticmethod
+    def actuator_name() -> str:
+        return 'Relay'
+
 class LedActuator(BooleanActuatorBase):
     def __init__(self, pin):
         super().__init__(pin)

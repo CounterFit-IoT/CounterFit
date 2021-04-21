@@ -1,3 +1,5 @@
+# pylint: disable=C0103,E0401,W0603
+
 import argparse
 import json
 import webbrowser
@@ -236,14 +238,15 @@ def get_sensor_units():
 
     sensor_type = body['type']
 
+    #pylint: disable=R1705
     for sensor in all_sensors:
         if sensor.sensor_name() == sensor_type:
             if sensor.sensor_type() == SensorType.FLOAT:
                 return {'units':sensor.sensor_units()}
             elif sensor.sensor_type() == SensorType.INTEGER:
                 return {'units':sensor.sensor_units()}
-
-            return {'units':[]}
+            else:
+                return {'units':[]}
 
     return 'Not found', 404
 

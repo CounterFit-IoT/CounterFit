@@ -295,15 +295,15 @@ class PressureSensor(FloatSensorBase):
     def sensor_units() -> List[str]:
         return [PressureUnit.kPa.name, PressureUnit.torr.name, PressureUnit.atm.name, PressureUnit.bar.name]
 
-class LightSensor(IntegerSensorBase):
+class AnalogSensor(IntegerSensorBase):
     #pylint: disable=W0613
     def __init__(self, pin:int, unit):
-
-        super().__init__(pin, 0, 1000)
+        super().__init__(pin, 0, 1023)
 
     @staticmethod
+    @abstractmethod
     def sensor_name() -> str:
-        return 'Light'
+        pass
 
     @property
     def unit(self) -> str:
@@ -312,6 +312,16 @@ class LightSensor(IntegerSensorBase):
     @staticmethod
     def sensor_units() -> List[str]:
         return [DefaultUnit.NoUnits.name]
+
+class LightSensor(AnalogSensor):
+    @staticmethod
+    def sensor_name() -> str:
+        return 'Light'
+
+class SoilMoistureSensor(AnalogSensor):
+    @staticmethod
+    def sensor_name() -> str:
+        return 'Soil Moisture'
 
 class ButtonSensor(BooleanSensorBase):
     @staticmethod

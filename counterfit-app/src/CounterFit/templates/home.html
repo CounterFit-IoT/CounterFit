@@ -233,6 +233,10 @@
                                         {% with actuator=actuator %}
                                             {% include "led_actuator.html" %}
                                         {% endwith %}
+                                    {% elif actuator.actuator_name() == "Relay": %}
+                                        {% with actuator=actuator %}
+                                            {% include "relay_actuator.html" %}
+                                        {% endwith %}
                                     {% endif %}
                                 </div>
 

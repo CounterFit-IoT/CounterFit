@@ -1,5 +1,5 @@
 '''
-Tests the Grove LED sensor shim.
+Tests the Grove LED shim.
 
 To run this test, ensure you have the CounterFit Virtual IoT Device app running, with an LED actuator
 on pin 1.

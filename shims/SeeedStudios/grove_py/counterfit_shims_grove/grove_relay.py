@@ -1,40 +1,40 @@
 '''
 This is the code for
-    - `Grove - Red LED    <https://www.seeedstudio.com/Grove-Red-LED-p-1142.html>`_
-    - `Grove - Green LED  <https://www.seeedstudio.com/Grove-Green-LED-p-1144.html>`_
-    - `Grove - Purple LED <https://www.seeedstudio.com/Grove-Purple-LED-3m-p-1143.html>`_
-    - `Grove - White LED  <https://www.seeedstudio.com/Grove-White-LED-p-1140.html>`_
+    - `Grove - Relay <https://www.seeedstudio.com/s/Grove-Relay-p-769.html>`_
 
 Examples:
 
     .. code-block:: python
+
         import time
         from counterfit_connection import CounterFitConnection
-        from counterfit_shims_grove.grove_light_sensor_v1_2 import GroveLightSensor
+        from counterfit_shims_grove.grove_relay import GroveRelay
 
         # Init the connection to the CounterFit Virtual IoT Device app
         CounterFitConnection.init('127.0.0.1', 5000)
 
         # connect to pin 5(slot D5)
         PIN   = 5
-        led = GroveLed(PIN)
+        relay = GroveRelay(PIN)
+
         while True:
-            led.on()
+            relay.on()
             time.sleep(1)
-            led.off()
+            relay.off()
             time.sleep(1)
 '''
 
 # pylint: disable=import-error
 from counterfit_connection import CounterFitConnection
 
-__all__ = ['GroveLed']
+__all__ = ["GroveRelay"]
 
-class GroveLed():
+class GroveRelay():
     '''
-    Class for Grove - XXXX Led
+    Class for Grove - Relay
+
     Args:
-        pin(int): number of digital pin the led connected.
+        pin(int): number of digital pin the relay connected.
     '''
     def __init__(self, pin):
         self.__pin = pin

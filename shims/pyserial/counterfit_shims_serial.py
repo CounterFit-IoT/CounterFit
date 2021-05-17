@@ -9,7 +9,7 @@ __all__ = ['Serial']
 class Serial():
     '''Shims for the PySerial Serial class
     '''
-    def __init__(self, port: str, baud: int, **kwargs):
+    def __init__(self, port: str, baud: int = 9600, **kwargs):
         self.__port = port
 
     def read(self, **kwargs) -> str:

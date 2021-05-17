@@ -23,7 +23,7 @@ def test_read(init_counterfit_device):
     '''
     Tests values returned from the Serial port
     '''
-    serial = counterfit_shims_serial.Serial('/dev/tty0', 9600, timeout=1)
+    serial = counterfit_shims_serial.Serial('/dev/tty0')
     assert serial.read() == 'h'
     assert serial.read() == 'e'
     assert serial.read() == 'l'

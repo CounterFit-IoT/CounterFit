@@ -5,10 +5,10 @@
     <title>CounterFit</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
 
@@ -111,32 +111,20 @@
                                       <div class="col">
                                         <select name="new_sensor_type" id="new_sensor_type" class="form-control">
                                             {% for sensor_type in all_sensors %}
-                                            <option value="{{ sensor_type.sensor_name() }}">{{ sensor_type.sensor_name() }}</option>
+                                            <option value="{{ sensor_type.sensor_name() }}" data-sensortype="{{ sensor_type.sensor_type() }}">{{ sensor_type.sensor_name() }}</option>
                                             {% endfor %}
                                         </select>
                                       </div>
                                     </div>
-                                    <div class="row" style="margin-top: 20px;">
-                                      <div class="col">
-                                        <label for="new_sensor_units">Units:</label>
-                                      </div>
-                                      <div class="col">
-                                        <select name="new_sensor_units" id="new_sensor_units" class="form-control">
-                                        </select>
-                                      </div>
+                                    
+                                    <div id="pin_sensor_create_settings" style="display:block">
+                                        {% include "pin_sensor_create_settings.html" %}
                                     </div>
-                                    <div class="row" style="margin-top: 20px;">
-                                      <div class="col">
-                                        <label for="new_sensor_pin">Pin:</label>
-                                      </div>
-                                      <div class="col">
-                                        <select name="new_sensor_pin" id="new_sensor_pin" class="form-control">
-                                            {% for pin in pins %}
-                                            <option value="{{ pin }}">{{ pin }}</option>
-                                            {% endfor %}
-                                        </select>
-                                      </div>
+                                    
+                                    <div id="serial_sensor_create_settings" style="display:none">
+                                        {% include "serial_sensor_create_settings.html" %}
                                     </div>
+
                                 </div>
                             </div>
                             <div class="card-footer">
@@ -164,6 +152,11 @@
                                         {% if sensor.sensor_type().name == "BOOLEAN": %}
                                             {% with sensor=sensor %}
                                                 {% include "boolean_sensor.html" %}
+                                            {% endwith %}
+                                        {% endif %}
+                                        {% if sensor.sensor_name() == "UART GPS": %}
+                                            {% with sensor=sensor %}
+                                                {% include "gps_sensor.html" %}
                                             {% endwith %}
                                         {% endif %}
                                     </div>
@@ -205,12 +198,12 @@
                                     </div>
                                     <div class="row" style="margin-top: 20px;">
                                       <div class="col">
-                                        <label for="new_actuator_pin">Pin:</label>
+                                        <label for="new_actuator_port">Pin:</label>
                                       </div>
                                       <div class="col">
-                                        <select name="new_actuator_pin" id="new_actuator_pin" class="form-control">
-                                            {% for pin in pins %}
-                                            <option value="{{ pin }}">{{ pin }}</option>
+                                        <select name="new_actuator_port" id="new_actuator_port" class="form-control">
+                                            {% for port in ports %}
+                                            <option value="{{ port }}">{{ port }}</option>
                                             {% endfor %}
                                         </select>
                                       </div>
@@ -256,17 +249,37 @@
             var new_sensor_type_control = document.getElementById("new_sensor_type")
             var new_actuator_type_control = document.getElementById("new_actuator_type")
             var new_sensor_pin_control = document.getElementById("new_sensor_pin")
-            var new_actuator_pin_control = document.getElementById("new_actuator_pin")
+            var new_sensor_port_control = document.getElementById("new_sensor_port")
+            var new_actuator_port_control = document.getElementById("new_actuator_port")
             var new_sensor_units_control = document.getElementById("new_sensor_units")
+            var pin_sensor_create_settings = document.getElementById("pin_sensor_create_settings")
+            var serial_sensor_create_settings = document.getElementById("serial_sensor_create_settings")
+
+            new_sensor_type_control.addEventListener("change", function () {
+                var option = new_sensor_type_control.options[new_sensor_type_control.selectedIndex]
+
+                sensor_type = option.getAttribute('data-sensortype')
+
+                if (sensor_type == "SensorType.SERIAL"){
+                    pin_sensor_create_settings.style.display = "none"
+                    serial_sensor_create_settings.style.display = "block"
+                }
+                else {
+                    pin_sensor_create_settings.style.display = "block"
+                    serial_sensor_create_settings.style.display = "none"
+                }
+            })
 
             add_new_sensor_button.addEventListener("click", function () {
                 var new_sensor_type = new_sensor_type_control.value
                 var new_sensor_unit = new_sensor_units_control.value
                 var new_sensor_pin = parseInt(new_sensor_pin_control.value)
+                var new_sensor_port = new_sensor_port_control.value
 
                 var payload = {
                     'type': new_sensor_type,
                     'pin': new_sensor_pin,
+                    'port': new_sensor_port,
                     'unit': new_sensor_unit
                 }
 
@@ -281,11 +294,11 @@
 
             add_new_actuator_button.addEventListener("click", function () {
                 var new_actuator_type = new_actuator_type_control.value
-                var new_actuator_pin = parseInt(new_actuator_pin_control.value)
+                var new_actuator_port = parseInt(new_actuator_port_control.value)
 
                 var payload = {
                     'type': new_actuator_type,
-                    'pin': new_actuator_pin
+                    'port': new_actuator_port
                 }
 
                 var xhr = new XMLHttpRequest();

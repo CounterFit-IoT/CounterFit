@@ -7,4 +7,6 @@ setup(
         "Flask-SocketIO==5.0.1",
         "eventlet==0.30.2"
     ],
+    tests_require=['pytest==4.4.1'],
+    test_suite='tests',
 )

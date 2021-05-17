@@ -2,25 +2,29 @@
     <div class="card-header py-3 text-white bg-secondary">
         <div class="container-fluid d-flex align-items-center">
             <h4 class="my-0 fw-normal">{{ sensor.sensor_name() }}</h4>
-            <h4 class="my-0 fw-normal ms-auto">Pin {{sensor.pin}}</h4>
+            <h4 class="my-0 fw-normal ms-auto">Pin {{sensor.port}}</h4>
         </div>
     </div>
     <div class="card-body">
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <label for="value{{sensor.pin}}">Value:</label>
+                    <label for="value{{sensor.id}}">Value:</label>
                 </div>
                 <div class="col">
-                    <input class="form-check-input" type="checkbox" id="value{{sensor.pin}}" value="{{sensor.value}}"/>
+                    <input class="form-check-input" type="checkbox" id="value{{sensor.id}}" value="{{sensor.value}}"/>
                 </div>
             </div>
             <div class="row" style="margin-top: 20px;">
                 <div class="col">
-                    <label for="random{{sensor.pin}}">Random:</label>
+                    <label for="random{{sensor.id}}">Random:</label>
                 </div>
                 <div class="col">
-                    <input class="form-check-input" type="checkbox" id="random{{sensor.pin}}" value="Random"/>
+                    <input class="form-check-input" type="checkbox" id="random{{sensor.id}}" 
+                        {% if sensor.random: %}
+                            checked
+                        {% endif %}
+                    />
                 </div>
             </div>
         </div>
@@ -29,10 +33,10 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <button id="sensor_set_button{{sensor.pin}}" class="w-100 btn btn-lg btn-primary">Set</button>
+                    <button id="sensor_set_button{{sensor.id}}" class="w-100 btn btn-lg btn-primary">Set</button>
                 </div>
                 <div class="col">
-                    <button id="sensor_delete_button{{sensor.pin}}" class="w-100 btn btn-lg btn-danger">Delete</button>
+                    <button id="sensor_delete_button{{sensor.id}}" class="w-100 btn btn-lg btn-danger">Delete</button>
                 </div>
             </div>
         </div>
@@ -40,10 +44,10 @@
 
     <script>
         window.addEventListener("DOMContentLoaded", function () {
-            var set_button = document.getElementById("sensor_set_button{{sensor.pin}}")
-            var delete_button = document.getElementById("sensor_delete_button{{sensor.pin}}")
-            var is_random_control = document.getElementById("random{{sensor.pin}}")
-            var value_control = document.getElementById("value{{sensor.pin}}")
+            var set_button = document.getElementById("sensor_set_button{{sensor.id}}")
+            var delete_button = document.getElementById("sensor_delete_button{{sensor.id}}")
+            var is_random_control = document.getElementById("random{{sensor.id}}")
+            var value_control = document.getElementById("value{{sensor.id}}")
 
             is_random_control.addEventListener("change", function() {
                 value_control.disabled = is_random_control.checked
@@ -55,7 +59,7 @@
                 var value = value_control.checked
 
                 var payload = {
-                    'pin': {{sensor.pin}},
+                    "port": "{{sensor.port}}",
                     'value': value,
                     'is_random': is_random
                 }
@@ -70,7 +74,7 @@
 
             delete_button.addEventListener("click", function(){
                 var payload = {
-                    'pin': {{sensor.pin}}
+                    "port": "{{sensor.port}}"
                 }
 
                 var xhr = new XMLHttpRequest();

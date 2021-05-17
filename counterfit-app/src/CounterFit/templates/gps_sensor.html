@@ -1,0 +1,232 @@
+<div class="card shadow-sm border-secondary" style="margin: 10px;">
+    <div class="card-header py-3 text-white bg-secondary">
+        <div class="container-fluid d-flex align-items-center">
+            <h4 class="my-0 fw-normal">{{ sensor.sensor_name() }}</h4>
+            <h4 class="my-0 fw-normal ms-auto">Port {{sensor.port}}</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container">
+            
+            <div class="row">
+                <div class="col">
+                    <label for="source{{sensor.id}}">Source:</label>
+                </div>
+                <div class="col">
+                    <select name="source{{sensor.id}}" id="source{{sensor.id}}" class="form-control">
+                        <option value="latlon"
+                            {% if sensor.value_type.name == "LATLON": %}
+                                selected
+                            {% endif %}
+                        >Lat/Lon</option>
+                        <option value="nmeasentences"
+                            {% if sensor.value_type.name == "NMEA": %}
+                                selected
+                            {% endif %}
+                        >NMEA</option>
+                        <option value="gpxfile"
+                            {% if sensor.value_type.name == "GPX": %}
+                                selected
+                            {% endif %}
+                        >GPX file</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="latlonsettings{{sensor.id}}"
+                {% if sensor.value_type.name == "LATLON": %}
+                    style="display:block"
+                {% else %}
+                    style="display:none"
+                {% endif %}
+                >
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col">
+                        <label for="lat{{sensor.id}}">Lat:</label>
+                    </div>
+                    <div class="col">
+                        <input class="form-control" type="number" id="lat{{sensor.id}}" value="{{sensor.lat}}" style="width: 100%;"/>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col">
+                        <label for="lon{{sensor.id}}">Lat:</label>
+                    </div>
+                    <div class="col">
+                        <input class="form-control" type="number" id="lon{{sensor.id}}" value="{{sensor.lon}}" style="width: 100%;"/>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col">
+                        <label for="number_of_satellites{{sensor.id}}"># Satellites:</label>
+                    </div>
+                    <div class="col">
+                        <input class="form-control" type="number" id="number_of_satellites{{sensor.id}}" value="{{sensor.number_of_satellites}}" style="width: 100%;"/>
+                    </div>
+                </div>
+            </div>
+
+            <div id="nmeasettings{{sensor.id}}"
+                {% if sensor.value_type.name == "NMEA": %}
+                    style="display:block"
+                {% else %}
+                    style="display:none"
+                {% endif %}
+            >
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col">
+                        <label for="nmea{{sensor.id}}">NMEA:</label>
+                    </div>
+                    <div class="col">
+                        <textarea id="nmea{{sensor.id}}" name="nmea{{sensor.id}}" rows="8" cols="50" style="width: 100%;">{{sensor.raw_nmea}}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gpxsettings{{sensor.id}}"
+                {% if sensor.value_type.name == "GPX": %}
+                    style="display:block"
+                {% else %}
+                    style="display:none"
+                {% endif %}
+            >
+                <div class="row" style="margin-top: 20px;">
+
+                    <div class="col">
+                        <label for="nmea{{sensor.id}}">GPX File:</label>
+                    </div>
+                    <div class="col">
+                        {{sensor.gpx_file_name}}
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <input class="form-control" type="file" id="gpx_file_name{{sensor.id}}" value="{{sensor.number_of_satellites}}" style="width: 100%;"/>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 20px;">
+                <div class="col">
+                    <label for="repeat{{sensor.id}}">Repeat:</label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input" type="checkbox" id="repeat{{sensor.id}}" 
+                        {% if sensor.repeat: %}
+                            checked
+                        {% endif %}
+                    />
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <button id="sensor_set_button{{sensor.id}}" class="w-100 btn btn-lg btn-primary">Set</button>
+                </div>
+                <div class="col">
+                    <button id="sensor_delete_button{{sensor.id}}" class="w-100 btn btn-lg btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            var source_control = document.getElementById("source{{sensor.id}}")
+            var lat_lon_settings_control = document.getElementById("latlonsettings{{sensor.id}}")
+            var nmea_settings_control = document.getElementById("nmeasettings{{sensor.id}}")
+            var gpx_file_settings_control = document.getElementById("gpxsettings{{sensor.id}}")
+
+            var lat_control = document.getElementById("lat{{sensor.id}}")
+            var lon_control = document.getElementById("lon{{sensor.id}}")
+            var number_of_satellites_control = document.getElementById("number_of_satellites{{sensor.id}}")
+            var nmea_control = document.getElementById("nmea{{sensor.id}}")
+            var gpx_file_control = document.getElementById("gpx_file_name{{sensor.id}}")
+            var repeat_control = document.getElementById("repeat{{sensor.id}}")
+
+            var set_button = document.getElementById("sensor_set_button{{sensor.id}}")
+            var delete_button = document.getElementById("sensor_delete_button{{sensor.id}}")
+
+            source_control.addEventListener("change", function () {
+                var selected_source = source_control.value
+
+                if (selected_source == "latlon") {
+                    lat_lon_settings_control.style.display = "block"
+                    nmea_settings_control.style.display = "none"
+                    gpx_file_settings_control.style.display = "none"
+                }
+                else if (selected_source == "nmeasentences") {
+                    lat_lon_settings_control.style.display = "none"
+                    nmea_settings_control.style.display = "block"
+                    gpx_file_settings_control.style.display = "none"
+                }
+                else if (selected_source == "gpxfile") {
+                    lat_lon_settings_control.style.display = "none"
+                    nmea_settings_control.style.display = "none"
+                    gpx_file_settings_control.style.display = "block"
+                }
+            })
+
+            var post_gps_sensor_settings = function (payload) {
+                var xhr = new XMLHttpRequest();
+                var url = "./gps_sensor_settings";
+                xhr.open("POST", url, false);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                var data = JSON.stringify(payload);
+                xhr.send(data);
+            }
+
+            set_button.addEventListener("click", function() {
+                var selected_source = source_control.value
+
+                var payload = {
+                    "port": "{{sensor.port}}",
+                    "repeat": repeat_control.checked,
+                    "source": selected_source
+                }
+
+                if (selected_source == "latlon") {
+                    payload["lat"] = parseFloat(lat_control.value)
+                    payload["lon"] = parseFloat(lon_control.value)
+                    payload["number_of_satellites"] = parseInt(number_of_satellites_control.value)
+                    post_gps_sensor_settings(payload)
+                }
+                else if (selected_source == "nmeasentences") {
+                    payload["nmea"] = nmea_control.value
+                    post_gps_sensor_settings(payload)
+                }
+                else if (selected_source == "gpxfile") {
+                    const file = gpx_file_control.files[0];
+                    payload["gpx_file_name"] = file.name
+
+                    const reader = new FileReader();
+                    reader.onload = function(event)
+                    {
+                        // NOTE: event.target point to FileReader
+                        var contents = event.target.result;
+                        payload["gpx"] = contents;
+                        post_gps_sensor_settings(payload)
+                    };
+                    
+                    reader.readAsText(file);
+                }
+            });
+
+            delete_button.addEventListener("click", function(){
+                var payload = {
+                    "port": "{{sensor.port}}"
+                }
+
+                var xhr = new XMLHttpRequest();
+                var url = "./delete_sensor";
+                xhr.open("POST", url, false);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                var data = JSON.stringify(payload);
+                xhr.send(data);
+                location.reload();
+            });
+        })
+    </script>
+</div>

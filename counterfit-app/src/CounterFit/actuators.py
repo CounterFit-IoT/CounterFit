@@ -6,8 +6,8 @@ class ActuatorType(Enum):
     BOOLEAN = 2
 
 class ActuatorBase(ABC):
-    def __init__(self, pin:int):
-        self.__pin = pin
+    def __init__(self, port:str):
+        self.__port = port
     
     @staticmethod
     @abstractmethod
@@ -20,13 +20,13 @@ class ActuatorBase(ABC):
         pass
 
     @property
-    def pin(self) -> int:
-        return self.__pin
+    def port(self) -> str:
+        return self.__port
 
 class FloatActuatorBase(ActuatorBase):
-    def __init__(self, pin:int):
+    def __init__(self, port:str):
 
-        super().__init__(pin)
+        super().__init__(port)
         self.__value = 0
 
     @staticmethod
@@ -47,9 +47,9 @@ class FloatActuatorBase(ActuatorBase):
         self.__value = val
 
 class BooleanActuatorBase(ActuatorBase):
-    def __init__(self, pin:int):
+    def __init__(self, port:str):
 
-        super().__init__(pin)
+        super().__init__(port)
 
         self.__value = False
 
@@ -76,8 +76,8 @@ class RelayActuator(BooleanActuatorBase):
         return 'Relay'
 
 class LedActuator(BooleanActuatorBase):
-    def __init__(self, pin):
-        super().__init__(pin)
+    def __init__(self, port:str):
+        super().__init__(port)
         self.__color = "#FF0000"
 
     @staticmethod

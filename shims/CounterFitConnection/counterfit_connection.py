@@ -38,39 +38,55 @@ class CounterFitConnection:
         requests.post(CounterFitConnection.base_url + 'connect')
     
     @staticmethod
-    def get_sensor_float_value(pin: int) -> float:
+    def get_sensor_float_value(port: int) -> float:
         '''
-        Reads a float value from the sensor on the given pin
+        Reads a float value from the sensor on the given port
         '''
-        response = requests.get(CounterFitConnection.base_url + 'sensor_value?pin=' + str(pin))
+        response = requests.get(CounterFitConnection.base_url + 'sensor_value?port=' + str(port))
         return float(response.json()['value'])
     
     @staticmethod
-    def get_sensor_int_value(pin: int) -> int:
+    def get_sensor_int_value(port: int) -> int:
         '''
-        Reads an integer value from the sensor on the given pin
+        Reads an integer value from the sensor on the given port
         '''
-        response = requests.get(CounterFitConnection.base_url + 'sensor_value?pin=' + str(pin))
+        response = requests.get(CounterFitConnection.base_url + 'sensor_value?port=' + str(port))
         return int(response.json()['value'])
     
     @staticmethod
-    def get_sensor_boolean_value(pin: int) -> bool:
+    def get_sensor_boolean_value(port: int) -> bool:
         '''
-        Reads a bool value from the sensor on the given pin
+        Reads a bool value from the sensor on the given port
         '''
-        response = requests.get(CounterFitConnection.base_url + 'sensor_value?pin=' + str(pin))
+        response = requests.get(CounterFitConnection.base_url + 'sensor_value?port=' + str(port))
         return bool(response.json()['value'])
     
     @staticmethod
-    def set_actuator_float_value(pin: int, value: float) -> None:
+    def read_serial_sensor_char(port: str) -> str:
         '''
-        Sends a float value to the actuator on the given pin
+        Reads a character from the serial sensor on the given port
         '''
-        requests.post(CounterFitConnection.base_url + 'actuator_value?pin=' + str(pin), json= {'value':value})
+        response = requests.get(CounterFitConnection.base_url + 'serial_sensor_character?port=' + port)
+        return str(response.json()['value'])
     
     @staticmethod
-    def set_actuator_boolean_value(pin: int, value: bool) -> None:
+    def read_serial_sensor_line(port: str) -> str:
         '''
-        Sends a bool value to the actuator on the given pin
+        Reads a line from the serial sensor on the given port
         '''
-        requests.post(CounterFitConnection.base_url + 'actuator_value?pin=' + str(pin), json= {'value':value})
+        response = requests.get(CounterFitConnection.base_url + 'serial_sensor_line?port=' + port)
+        return str(response.json()['value'])
+    
+    @staticmethod
+    def set_actuator_float_value(port: int, value: float) -> None:
+        '''
+        Sends a float value to the actuator on the given port
+        '''
+        requests.post(CounterFitConnection.base_url + 'actuator_value?port=' + str(port), json= {'value':value})
+    
+    @staticmethod
+    def set_actuator_boolean_value(port: int, value: bool) -> None:
+        '''
+        Sends a bool value to the actuator on the given port
+        '''
+        requests.post(CounterFitConnection.base_url + 'actuator_value?port=' + str(port), json= {'value':value})

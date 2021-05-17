@@ -1,6 +1,7 @@
 # pylint: disable=C0103
 
-from .sensors import *
-from .actuators import *
+from CounterFit.sensors import *
+from CounterFit.serial_sensors import *
+from CounterFit.actuators import *
 
-__version__ = "0.1.3.dev14"
+__version__ = "0.1.3.dev15"

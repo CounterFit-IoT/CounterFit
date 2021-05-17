@@ -7,10 +7,11 @@ class SensorType(Enum):
     FLOAT = 1
     INTEGER = 2
     BOOLEAN = 3
+    SERIAL = 4
 
 class SensorBase(ABC):
-    def __init__(self, pin:int):
-        self.__pin = pin
+    def __init__(self, port:str):
+        self.__port = port
         self._random = False
     
     @staticmethod
@@ -24,8 +25,13 @@ class SensorBase(ABC):
         pass
 
     @property
-    def pin(self) -> int:
-        return self.__pin
+    #pylint: disable=invalid-name
+    def id(self) -> str:
+        return self.__port
+
+    @property
+    def port(self) -> str:
+        return self.__port
     
     @property
     def random(self) -> bool:
@@ -44,9 +50,9 @@ class PercentUnit(Enum):
     Percent = 1
 
 class FloatSensorBase(SensorBase):
-    def __init__(self, pin:int, valid_min:float, valid_max:float):
+    def __init__(self, port:str, valid_min:float, valid_max:float):
 
-        super().__init__(pin)
+        super().__init__(port)
 
         self.__valid_min = valid_min
         self.__valid_max = valid_max
@@ -115,9 +121,9 @@ class FloatSensorBase(SensorBase):
         return self.__valid_max
 
 class IntegerSensorBase(SensorBase):
-    def __init__(self, pin:int, valid_min:int, valid_max:int):
+    def __init__(self, port:str, valid_min:int, valid_max:int):
 
-        super().__init__(pin)
+        super().__init__(port)
 
         self.__valid_min = valid_min
         self.__valid_max = valid_max
@@ -186,9 +192,9 @@ class IntegerSensorBase(SensorBase):
         return self.__valid_max
 
 class BooleanSensorBase(SensorBase):
-    def __init__(self, pin:int):
+    def __init__(self, port:str):
 
-        super().__init__(pin)
+        super().__init__(port)
 
         self.value = False
 
@@ -219,7 +225,7 @@ class TemperatureUnit(Enum):
     Kelvin = 3
 
 class TemperatureSensor(FloatSensorBase):
-    def __init__(self, pin:int, unit):
+    def __init__(self, port:str, unit):
         if isinstance (unit, str):
             unit = TemperatureUnit[unit]
 
@@ -232,7 +238,7 @@ class TemperatureSensor(FloatSensorBase):
         else:
             valid_min = 0
         
-        super().__init__(pin, valid_min, 999999999.0)
+        super().__init__(port, valid_min, 999999999.0)
 
     @staticmethod
     def sensor_name() -> str:
@@ -247,13 +253,13 @@ class TemperatureSensor(FloatSensorBase):
         return [TemperatureUnit.Celsius.name, TemperatureUnit.Fahrenheit.name, TemperatureUnit.Kelvin.name]
 
 class HumiditySensor(FloatSensorBase):
-    def __init__(self, pin:int, unit):
+    def __init__(self, port:str, unit):
         if isinstance (unit, str):
             unit = PercentUnit[unit]
 
         self.__unit = unit
 
-        super().__init__(pin, 0.0, 100.0)
+        super().__init__(port, 0.0, 100.0)
 
     @staticmethod
     def sensor_name() -> str:
@@ -275,13 +281,13 @@ class PressureUnit(Enum):
     bar = 4
 
 class PressureSensor(FloatSensorBase):
-    def __init__(self, pin:int, unit):
+    def __init__(self, port:str, unit):
         if isinstance (unit, str):
             unit = PressureUnit[unit]
 
         self.__unit = unit
 
-        super().__init__(pin, 0, 999999999.0)
+        super().__init__(port, 0, 999999999.0)
 
     @staticmethod
     def sensor_name() -> str:
@@ -297,8 +303,8 @@ class PressureSensor(FloatSensorBase):
 
 class AnalogSensor(IntegerSensorBase):
     #pylint: disable=W0613
-    def __init__(self, pin:int, unit):
-        super().__init__(pin, 0, 1023)
+    def __init__(self, port:str, unit):
+        super().__init__(port, 0, 1023)
 
     @staticmethod
     @abstractmethod
@@ -327,3 +333,7 @@ class ButtonSensor(BooleanSensorBase):
     @staticmethod
     def sensor_name() -> str:
         return 'Button'
+
+    @staticmethod
+    def sensor_units() -> List[str]:
+        return [DefaultUnit.NoUnits.name]

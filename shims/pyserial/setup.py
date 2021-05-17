@@ -1,7 +1,6 @@
 '''
-Connection library library for use with the CounterFit Virtual IoT Device app
+Shims for the PySerial library for use with the CounterFit Virtual IoT Device app
 '''
-
 # pylint: disable=redefined-builtin
 
 from codecs import open
@@ -14,10 +13,10 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name='counterfit-connection',
-    py_modules=['counterfit_connection'],
-    version='0.1.0.dev2',
-    description='Connection library library for use with the CounterFit Virtual IoT Device app',
+    name='counterfit-shims-serial',
+    py_modules=['counterfit_shims_serial'],
+    version='0.1.0.dev1',
+    description='Shims for the PySerial library for the CounterFit virtual IoT device app',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Jim Bennett',
@@ -37,8 +36,8 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9"
     ],
-    keywords="iot grove seeed virtual hardware",
-    install_requires=['requests'],
+    keywords="iot pyserial serial virtual hardware",
+    install_requires=['requests','counterfit-connection'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest==4.4.1'],
     test_suite='tests',

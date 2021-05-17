@@ -1,0 +1,21 @@
+<div class="row" style="margin-top: 20px;">
+    <div class="col">
+        <label for="new_sensor_units">Units:</label>
+    </div>
+    <div class="col">
+        <select name="new_sensor_units" id="new_sensor_units" class="form-control">
+        </select>
+    </div>
+</div>
+<div class="row" style="margin-top: 20px;">
+    <div class="col">
+        <label for="new_sensor_pin">Pin:</label>
+    </div>
+    <div class="col">
+        <select name="new_sensor_pin" id="new_sensor_pin" class="form-control">
+            {% for port in ports %}
+            <option value="{{ port }}">{{ port }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>

@@ -3,7 +3,7 @@
     <div class="card-header py-3 text-white bg-secondary">
         <div class="container-fluid d-flex align-items-center">
             <h4 class="my-0 fw-normal">{{ actuator.actuator_name() }}</h4>
-            <h4 class="my-0 fw-normal ms-auto">Pin {{actuator.pin}}</h4>
+            <h4 class="my-0 fw-normal ms-auto">Pin {{actuator.port}}</h4>
         </div>
     </div>
     <div class="card-body">
@@ -15,7 +15,7 @@
                 <div class="col">
                     <svg width="100px" height="70px" viewBox="0 0 100 70" version="1.1"
                          xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                        <title id="relayTitleId{{actuator.pin}}">Relay off</title>
+                        <title id="relayTitleId{{actuator.id}}">Relay off</title>
                         <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                             <g id="Artboard" transform="translate(-38.000000, -48.000000)">
                                 <g id="relay" transform="translate(38.000000, 48.000000)">
@@ -27,11 +27,11 @@
                                             <polyline id="Path" stroke-width="3.449638" stroke-linecap="square" points="0 16.0743902 27 16.0743902 27 16.0743902 27 16.0743902 27 16.0743902"></polyline>
                                             <polyline id="Path-Copy" stroke-width="3.45" stroke-linecap="square" points="69.3412154 16.0743902 96.4412154 16.0743902 96.4412154 16.0743902 96.4412154 16.0743902 96.4412154 16.0743902"></polyline>
                                         </g>
-                                        <g id="relay_open{{actuator.pin}}" transform="translate(0.000000, 33.170732)" fill-rule="nonzero">
+                                        <g id="relay_open{{actuator.id}}" transform="translate(0.000000, 33.170732)" fill-rule="nonzero">
                                             <path d="M39.250709,0.036993145 C36.5409268,-0.279344691 34.0160538,1.46318254 33.3453935,4.11251418 L0,4.14634146 L0,6.82926829 L33.4385858,6.91350179 C34.1289886,9.22493605 36.2491483,10.8104375 38.6573559,10.8162112 C39.9623614,10.8088356 41.2204787,10.3278685 42.1986641,9.46240051 L58.1531896,20.7317073 L59.7560976,18.4442341 L43.7736143,7.14691742 C43.9695968,6.5730598 44.0672734,5.97012212 44.0625105,5.36362198 C44.017822,2.63078109 41.9604912,0.353330981 39.250709,0.036993145 Z M38.6200789,8.01522358 C37.1583679,8.01522358 35.973417,6.82806111 35.973417,5.36362198 C35.973417,3.89918286 37.1583679,2.71202038 38.6200789,2.71202038 C40.08179,2.71202038 41.2667409,3.89918286 41.2667409,5.36362198 C41.2667409,6.82079964 40.0931444,8.00496177 38.6387174,8.01522358 L38.6200789,8.01522358 Z" id="Shape"></path>
                                             <path d="M100,4.14634146 L69.6976868,4.12347239 C69.0687317,1.5026095 66.5776027,-0.249323806 63.8756306,0.0290019564 C61.1736586,0.307327719 59.0987544,2.52960071 59.0263399,5.22271055 C58.9539255,7.91582039 60.9064572,10.2446045 63.5896322,10.6653479 C66.2728071,11.0860913 68.8545435,9.46831689 69.6234482,6.88442233 L100,6.82926829 L100,4.14634146 Z M64.4081865,7.97039598 C62.9526565,7.97039598 61.7727162,6.80020295 61.7727162,5.3566967 C61.7727162,3.91319045 62.9526565,2.74299742 64.4081865,2.74299742 C65.8637166,2.74299742 67.0436569,3.91319045 67.0436569,5.3566967 C67.0386624,6.79098414 65.8729092,7.95530668 64.4267462,7.97039598 L64.4081865,7.97039598 Z" id="Shape"></path>
                                         </g>
-                                        <g id="relay_closed{{actuator.pin}}" transform="translate(0.000000, 33.170732)" fill-rule="nonzero"
+                                        <g id="relay_closed{{actuator.id}}" transform="translate(0.000000, 33.170732)" fill-rule="nonzero"
                                            visibility="hidden">
                                             <path d="M39.250709,0.036993145 C36.5409268,-0.279344691 34.0160538,1.46318254 33.3453935,4.11251418 L0,4.14634146 L0,6.82926829 L33.4385858,6.91350179 C34.1289886,9.22493605 36.2491483,10.8104375 38.6573559,10.8162112 C39.9623614,10.8088356 42.9268293,9.75609756 43.6585366,6.82926829 L59.7560976,6.82926829 L59.7560976,4.14634146 L43.6585366,4.14634146 C43.6585366,2.43902439 41.9604912,0.353330981 39.250709,0.036993145 Z M38.6200789,8.01522358 C37.1583679,8.01522358 35.973417,6.82806111 35.973417,5.36362198 C35.973417,3.89918286 37.1583679,2.71202038 38.6200789,2.71202038 C40.08179,2.71202038 41.2667409,3.89918286 41.2667409,5.36362198 C41.2667409,6.82079964 40.0931444,8.00496177 38.6387174,8.01522358 L38.6200789,8.01522358 Z" id="Shape"></path>
                                             <path d="M100,4.14634146 L69.6976868,4.12347239 C69.0687317,1.5026095 66.5776027,-0.249323806 63.8756306,0.0290019564 C61.1736586,0.307327719 59.0987544,2.52960071 59.0263399,5.22271055 C58.9539255,7.91582039 60.9064572,10.2446045 63.5896322,10.6653479 C66.2728071,11.0860913 68.8545435,9.46831689 69.6234482,6.88442233 L100,6.82926829 L100,4.14634146 Z M64.4081865,7.97039598 C62.9526565,7.97039598 61.7727162,6.80020295 61.7727162,5.3566967 C61.7727162,3.91319045 62.9526565,2.74299742 64.4081865,2.74299742 C65.8637166,2.74299742 67.0436569,3.91319045 67.0436569,5.3566967 C67.0386624,6.79098414 65.8729092,7.95530668 64.4267462,7.97039598 L64.4081865,7.97039598 Z" id="Shape"></path>
@@ -50,7 +50,7 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <button id="actuator_delete_button{{actuator.pin}}" class="w-100 btn btn-lg btn-danger">Delete</button>
+                    <button id="actuator_delete_button{{actuator.id}}" class="w-100 btn btn-lg btn-danger">Delete</button>
                 </div>
             </div>
         </div>
@@ -58,14 +58,14 @@
     
     <script>
         window.addEventListener("DOMContentLoaded", function () {
-            var delete_button = document.getElementById("actuator_delete_button{{actuator.pin}}")
-            var relay_closed = document.getElementById("relay_closed{{actuator.pin}}")
-            var relay_open = document.getElementById("relay_open{{actuator.pin}}")
-            var relay_title = document.getElementById("relayTitleId{{actuator.pin}}")
+            var delete_button = document.getElementById("actuator_delete_button{{actuator.id}}")
+            var relay_closed = document.getElementById("relay_closed{{actuator.id}}")
+            var relay_open = document.getElementById("relay_open{{actuator.id}}")
+            var relay_title = document.getElementById("relayTitleId{{actuator.id}}")
 
             delete_button.addEventListener("click", function(){
                 var payload = {
-                    'pin': {{actuator.pin}}
+                    "port": "{{actuator.id}}"
                 }
 
                 var xhr = new XMLHttpRequest();
@@ -78,7 +78,7 @@
             });
 
             var socket = io();
-            socket.on('actuator_change{{actuator.pin}}', function(data) {
+            socket.on('actuator_change{{actuator.id}}', function(data) {
                 if (data.value){
                     relay_open.style.visibility = "hidden"
                     relay_closed.style.visibility = "visible"

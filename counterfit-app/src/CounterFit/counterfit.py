@@ -7,8 +7,9 @@ from threading import Timer
 from flask import Flask, request, render_template
 from flask_socketio import SocketIO
 
-from .sensors import SensorBase, SensorType
-from .actuators import ActuatorBase
+from CounterFit.sensors import SensorBase, SensorType
+from CounterFit.serial_sensors import GPSSensor, GPSValueType, SerialSensorBase
+from CounterFit.actuators import ActuatorBase
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '247783f3-bdda-4536-bffc-109e2464f10b'
@@ -37,10 +38,11 @@ all_actuators = sorted(all_actuators, key=lambda a: a.actuator_name())
 
 @app.route('/', methods=['GET'])
 def home():
-    pins = []
-    for pin in range(0, 26):
-        if pin not in sensor_cache and pin not in actuator_cache:
-            pins.append(pin)
+    ports = []
+    for port in range(0, 26):
+        str_port = str(port)
+        if str_port not in sensor_cache and str_port not in actuator_cache:
+            ports.append(str_port)
 
     return render_template('home.html', 
                            sensors=sensor_cache.values(),
@@ -48,7 +50,7 @@ def home():
                            all_sensors=all_sensors,
                            all_actuators=all_actuators,
                            is_connected = is_connected,
-                           pins=pins)
+                           ports=ports)
 
 def set_and_send_connected(connected:bool = True) -> None:
     global is_connected
@@ -67,105 +69,140 @@ def device_disconnect():
 
     return 'OK', 200
 
+def create_pin_sensor(sensor, body):
+    port = str(body['pin'])
+    unit = body['unit']
+
+    if sensor.sensor_type() == SensorType.FLOAT:
+        new_sensor = sensor(port, unit)
+    elif sensor.sensor_type() == SensorType.INTEGER:
+        new_sensor = sensor(port, unit)
+    else:
+        new_sensor = sensor(port)
+
+    sensor_cache[port] = new_sensor
+
+def create_serial_sensor(sensor, body):
+    port = body['port']
+    new_sensor = sensor(port)
+    sensor_cache[port] = new_sensor
+
 @app.route('/create_sensor', methods=['POST'])
 def create_sensor():
-    set_and_send_connected()
     body = request.get_json()
 
     print('Create sensor called:', body)
     
     sensor_type = body['type']
-    pin = body['pin']
-    unit = body['unit']
 
     for sensor in all_sensors:
         if sensor.sensor_name() == sensor_type:
-            if sensor.sensor_type() == SensorType.FLOAT:
-                new_sensor = sensor(pin, unit)
-            elif sensor.sensor_type() == SensorType.INTEGER:
-                new_sensor = sensor(pin, unit)
+            if sensor.sensor_type() == SensorType.SERIAL:
+                create_serial_sensor(sensor, body)
             else:
-                new_sensor = sensor(pin)
-
-            sensor_cache[pin] = new_sensor
+                create_pin_sensor(sensor, body)
 
     return 'OK', 200
 
 @app.route('/create_actuator', methods=['POST'])
 def create_actuator():
-    set_and_send_connected()
     body = request.get_json()
 
     print('Create actuator called:', body)
     
     actuator_type = body['type']
-    pin = body['pin']
+    port = body['port']
 
     for actuator in all_actuators:
         if actuator.actuator_name() == actuator_type:
-            new_actuator = actuator(pin)
+            new_actuator = actuator(port)
 
-            actuator_cache[pin] = new_actuator
+            actuator_cache[port] = new_actuator
 
     return 'OK', 200
 
 @app.route('/sensor_value', methods=['GET'])
 def get_sensor_value():
     set_and_send_connected()
-    pin = int(request.args.get('pin', ''))
-    if pin in sensor_cache:
-        sensor = sensor_cache[pin]
+    port = str(request.args.get('port', ''))
+    if port in sensor_cache:
+        sensor = sensor_cache[port]
         
         response = {'value' : sensor.value}
-        print('Returning sensor value', response, 'for pin', pin)
+        print('Returning sensor value', response, 'for port', port)
 
         return json.dumps(response)
     
-    return 'Sensor with pin ' + str(pin) + ' not found', 404
+    return 'Sensor with port ' + str(port) + ' not found', 404
+
+@app.route('/serial_sensor_character', methods=['GET'])
+def get_serial_sensor_character():
+    set_and_send_connected()
+    port = str(request.args.get('port', ''))
+    if port in sensor_cache:
+        sensor: SerialSensorBase = sensor_cache[port]
+        
+        response = {'value' : sensor.read()}
+        print('Returning sensor value', response, 'for port', port)
+
+        return json.dumps(response)
+    
+    return 'Sensor with port ' + str(port) + ' not found', 404
+
+@app.route('/serial_sensor_line', methods=['GET'])
+def get_serial_sensor_line():
+    set_and_send_connected()
+    port = str(request.args.get('port', ''))
+    if port in sensor_cache:
+        sensor: SerialSensorBase = sensor_cache[port]
+        
+        response = {'value' : sensor.read_line()}
+        print('Returning sensor value', response, 'for port', port)
+
+        return json.dumps(response)
+    
+    return 'Sensor with port ' + str(port) + ' not found', 404
 
 @app.route('/delete_sensor', methods=['POST'])
 def delete_sensor():
-    set_and_send_connected()
     body = request.get_json()
 
     print('Delete sensor called:', body)
 
-    pin = body['pin']
+    port = body['port']
 
-    if pin in sensor_cache:
-        del sensor_cache[pin]
+    if port in sensor_cache:
+        del sensor_cache[port]
 
     return 'OK', 200
 
 @app.route('/delete_actuator', methods=['POST'])
 def delete_actuator():
-    set_and_send_connected()
     body = request.get_json()
 
     print('Delete actuator called:', body)
 
-    pin = body['pin']
+    port = body['port']
 
-    if pin in actuator_cache:
-        del actuator_cache[pin]
+    if port in actuator_cache:
+        del actuator_cache[port]
 
     return 'OK', 200
 
 @app.route('/float_sensor_settings', methods=['POST'])
 def set_float_sensor_settings():
-    set_and_send_connected()
     body = request.get_json()
 
     print('Float sensor settings called:', body)
     
-    pin = body['pin']
+    port = body['port']
     value = body['value']
     is_random = body['is_random']
     random_min = body['random_min']
     random_max = body['random_max']
 
-    if pin in sensor_cache:
-        sensor = sensor_cache[pin]
+    if port in sensor_cache:
+        sensor = sensor_cache[port]
         sensor.value = value
         sensor.random = is_random
         sensor.random_min = random_min
@@ -175,19 +212,18 @@ def set_float_sensor_settings():
 
 @app.route('/integer_sensor_settings', methods=['POST'])
 def set_integer_sensor_settings():
-    set_and_send_connected()
     body = request.get_json()
 
     print('Integer sensor settings called:', body)
     
-    pin = body['pin']
+    port = body['port']
     value = body['value']
     is_random = body['is_random']
     random_min = body['random_min']
     random_max = body['random_max']
 
-    if pin in sensor_cache:
-        sensor = sensor_cache[pin]
+    if port in sensor_cache:
+        sensor = sensor_cache[port]
         sensor.value = value
         sensor.random = is_random
         sensor.random_min = random_min
@@ -197,41 +233,66 @@ def set_integer_sensor_settings():
 
 @app.route('/led_actuator_settings', methods=['POST'])
 def set_led_actuator_settings():
-    set_and_send_connected()
     body = request.get_json()
 
     print('LED actuator settings called:', body)
     
-    pin = body['pin']
+    port = body['port']
     color = body['color']
 
-    if pin in actuator_cache:
-        actuator = actuator_cache[pin]
+    if port in actuator_cache:
+        actuator = actuator_cache[port]
         actuator.color = color
 
     return 'OK', 200
 
 @app.route('/boolean_sensor_settings', methods=['POST'])
 def set_boolean_sensor_settings():
-    set_and_send_connected()
     body = request.get_json()
 
     print('Boolean sensor settings called:', body)
     
-    pin = body['pin']
+    port = body['port']
     value = body['value']
     is_random = body['is_random']
 
-    if pin in sensor_cache:
-        sensor = sensor_cache[pin]
+    if port in sensor_cache:
+        sensor = sensor_cache[port]
         sensor.value = value
         sensor.random = is_random
 
     return 'OK', 200
 
+@app.route('/gps_sensor_settings', methods=['POST'])
+def set_gps_sensor_settings():
+    body = request.get_json()
+    
+    print('GPS sensor settings called:', body)
+
+    port = body['port']
+
+    if port in sensor_cache:
+        sensor : GPSSensor = sensor_cache[port]
+        sensor.repeat = body['repeat']
+        source = body['source']
+
+        if source == 'latlon':
+            sensor.value_type = GPSValueType.LATLON
+            sensor.lat = body['lat']
+            sensor.lon = body['lon']
+            sensor.number_of_satellites = body['number_of_satellites']
+        elif source == 'nmeasentences':
+            sensor.value_type = GPSValueType.NMEA
+            sensor.raw_nmea = body['nmea']
+        else:
+            sensor.value_type = GPSValueType.GPX
+            sensor.gpx_file_contents = body['gpx']
+            sensor.gpx_file_name = body['gpx_file_name']
+
+    return 'OK', 200
+
 @app.route('/sensor_units', methods=['POST'])
 def get_sensor_units():
-    set_and_send_connected()
     body = request.get_json()
 
     print('Sensor units called:', body)
@@ -253,18 +314,18 @@ def get_sensor_units():
 @app.route('/actuator_value', methods=['POST'])
 def set_actuator_value():
     set_and_send_connected()
-    pin = int(request.args.get('pin', ''))
+    port = str(request.args.get('port', ''))
     body = request.get_json()
 
-    print('Actuator value called:', body, 'for pin', pin)
+    print('Actuator value called:', body, 'for port', port)
 
     value = body['value']
 
-    if pin in actuator_cache:
-        actuator = actuator_cache[pin]
+    if port in actuator_cache:
+        actuator = actuator_cache[port]
         actuator.value = value
 
-        socketio.emit('actuator_change' + str(pin), {'pin':pin, 'value': value})
+        socketio.emit('actuator_change' + str(port), {'port':port, 'value': value})
 
     return 'OK', 200
 

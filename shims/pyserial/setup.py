@@ -15,7 +15,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 setup(
     name='counterfit-shims-serial',
     py_modules=['counterfit_shims_serial'],
-    version='0.1.0.dev2',
+    version='0.1.0.dev3',
     description='Shims for the PySerial library for the CounterFit virtual IoT device app',
     long_description=long_description,
     long_description_content_type='text/markdown',

@@ -24,22 +24,22 @@ def test_read(init_counterfit_device):
     Tests values returned from the Serial port
     '''
     serial = counterfit_shims_serial.Serial('/dev/tty0')
-    assert serial.read() == 'h'
-    assert serial.read() == 'e'
-    assert serial.read() == 'l'
-    assert serial.read() == 'l'
-    assert serial.read() == 'o'
-    assert serial.read() == '\n'
-    assert serial.read() == 'w'
-    assert serial.read() == 'o'
-    assert serial.read() == 'r'
-    assert serial.read() == 'l'
-    assert serial.read() == 'd'
+    assert serial.read().decode('utf-8') == 'h'
+    assert serial.read().decode('utf-8') == 'e'
+    assert serial.read().decode('utf-8') == 'l'
+    assert serial.read().decode('utf-8') == 'l'
+    assert serial.read().decode('utf-8') == 'o'
+    assert serial.read().decode('utf-8') == '\n'
+    assert serial.read().decode('utf-8') == 'w'
+    assert serial.read().decode('utf-8') == 'o'
+    assert serial.read().decode('utf-8') == 'r'
+    assert serial.read().decode('utf-8') == 'l'
+    assert serial.read().decode('utf-8') == 'd'
 
 def test_read_line(init_counterfit_device):
     '''
     Tests values returned from the Serial port
     '''
     serial = counterfit_shims_serial.Serial('/dev/tty1', 9600, timeout=1)
-    assert serial.readline() == 'hello'
-    assert serial.readline() == 'world'
+    assert serial.readline().decode('utf-8') == 'hello'
+    assert serial.readline().decode('utf-8') == 'world'

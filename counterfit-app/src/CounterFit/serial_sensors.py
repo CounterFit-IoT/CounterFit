@@ -77,6 +77,7 @@ class GPSValueType(Enum):
     NMEA = 2
     GPX = 3
 
+# pylint: disable=too-many-instance-attributes
 class GPSSensor(SerialSensorBase):
     def __init__(self, port:str):
         super().__init__(port)

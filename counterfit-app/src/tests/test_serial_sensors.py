@@ -9,6 +9,16 @@ def test_decimal_degree_conversion():
     assert GPSSensor._decimal_decrees_to_ddmmm(-47.09565) == '4705.739'
     assert GPSSensor._decimal_decrees_to_ddmmm(-47) == '4700.0'
 
+def test_checksum():
+    assert GPSSensor._build_checksum('$GPGGA,005206.768,5227.561,N,01230.806,E,1,12,1.0,0.0,M,0.0,M,,*00') == '68'
+    assert GPSSensor._build_checksum('GPGGA,005207.768,5249.958,N,01308.049,E,1,12,1.0,0.0,M,0.0,M,,*00') == '6E'
+    assert GPSSensor._build_checksum('$GPGGA,005208.768,5310.190,N,01409.023,E,1,12,1.0,0.0,M,0.0,M,,*00') == '6A'
+    assert GPSSensor._build_checksum('$GPGGA,005209.768,5300.094,N,01450.881,E,1,12,1.0,0.0,M,0.0,M,,*00') == '63'
+    assert GPSSensor._build_checksum('$GPGGA,005210.768,5148.313,N,01608.005,E,1,12,1.0,0.0,M,0.0,M,,*00') == '62'
+    assert GPSSensor._build_checksum('# $GPGGA,005211.768,5142.192,N,01454.836,E,1,12,1.0,0.0,M,0.0,M,,*00') == '61'
+    assert GPSSensor._build_checksum('$GPGGA,005212.768,5135.443,N,01332.439,E,1,12,1.0,0.0,M,0.0,M,,*00') == '6F'
+    assert GPSSensor._build_checksum('$GPGGA,005213.768,5153.810,N,01259.150,E,1,12,1.0,0.0,M,0.0,M,,*00') == '62'
+
 def test_gps_empty_read_line():
     gps = GPSSensor('/dev/ttyAMA0')
     line = gps.read_line()
@@ -18,6 +28,11 @@ def test_gps_empty_read():
     gps = GPSSensor('/dev/ttyAMA0')
     char = gps.read()
     assert char == ''
+
+def add_checksum_to_expected(expected: str) -> str:
+    checksum = GPSSensor._build_checksum(expected)
+    expected += checksum
+    return expected
 
 def test_gps_time_setting_when_using_lat_lon_n_e():
     gps = GPSSensor('/dev/ttyAMA0')
@@ -31,7 +46,9 @@ def test_gps_time_setting_when_using_lat_lon_n_e():
 
     line = gps.read_line()
 
-    assert line == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4700.0,N,12200.0,E,1,3,,0,M,0,M,,0000'
+    expected = add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4700.0,N,12200.0,E,1,3,,0,M,0,M,,*')
+
+    assert line == expected
     assert gps.read_line() == ''
 
 def test_gps_time_setting_when_using_lat_lon_s_w():
@@ -44,7 +61,9 @@ def test_gps_time_setting_when_using_lat_lon_s_w():
 
     current_utc = datetime.datetime.utcnow()
 
-    assert gps.read_line() == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4700.0,S,12200.0,W,1,3,,0,M,0,M,,0000'
+    expected = add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4700.0,S,12200.0,W,1,3,,0,M,0,M,,*')
+
+    assert gps.read_line() == expected
     assert gps.read_line() == ''
 
 def test_gps_nmea():
@@ -77,17 +96,17 @@ def test_gps_gpx():
         gps.gpx_file_contents = gpx_file.read()
     
     current_utc = datetime.datetime.utcnow()
-    assert gps.read_line() == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.42,W,1,3,,0,M,0,M,,0000'
+    assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.42,W,1,3,,0,M,0,M,,*')
 
     time.sleep(2)
 
     current_utc = datetime.datetime.utcnow()
-    assert gps.read_line() == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.4206,W,1,3,,0,M,0,M,,0000'
+    assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.4206,W,1,3,,0,M,0,M,,*')
 
     time.sleep(2)
-    
+
     current_utc = datetime.datetime.utcnow()
-    assert gps.read_line() == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0856,N,12215.4092,W,1,3,,0,M,0,M,,0000'
+    assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0856,N,12215.4092,W,1,3,,0,M,0,M,,*')
 
     assert gps.read_line() == ''
 
@@ -102,10 +121,10 @@ def test_gps_gpx_repeat():
     
     for _ in range(0, 20):
         current_utc = datetime.datetime.utcnow()
-        assert gps.read_line() == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.42,W,1,3,,0,M,0,M,,0000'
+        assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.42,W,1,3,,0,M,0,M,,*')
 
         current_utc = datetime.datetime.utcnow()
-        assert gps.read_line() == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.4206,W,1,3,,0,M,0,M,,0000'
+        assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.4206,W,1,3,,0,M,0,M,,*')
 
         current_utc = datetime.datetime.utcnow()
-        assert gps.read_line() == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0856,N,12215.4092,W,1,3,,0,M,0,M,,0000'
+        assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0856,N,12215.4092,W,1,3,,0,M,0,M,,*')

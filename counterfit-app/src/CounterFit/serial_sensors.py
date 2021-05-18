@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from enum import Enum
 import datetime
+import re
 from bs4 import BeautifulSoup
 
 from CounterFit.sensors import SensorBase, SensorType
@@ -101,6 +102,17 @@ class GPSSensor(SerialSensorBase):
         return f'{degrees}{minutes_string}'
 
     @staticmethod
+    def _build_checksum(sentence:str) -> str:
+        checksum_data = re.sub("(\n|\r\n)","", sentence[sentence.find("$")+1:sentence.find("*")])
+        
+        checksum = 0 
+                
+        for character in checksum_data:
+            checksum ^= ord(character)
+        
+        return hex(checksum).replace('0x', '').upper().zfill(2)
+
+    @staticmethod
     def _build_sentence_from_lat_lon_num_satellites(lat:float, lon:float, num_satellites:int) -> str:
         converted_lat = GPSSensor._decimal_decrees_to_ddmmm(lat)
         converted_lon = GPSSensor._decimal_decrees_to_ddmmm(lon)
@@ -108,7 +120,8 @@ class GPSSensor(SerialSensorBase):
         lon_dir = "E" if lon > 0 else "W"
         
         # use a timestamp of xxxxxx.xx, and this will be replaced with the current time when the value is requested
-        return f'$GPGGA,xxxxxx.xx,{converted_lat},{lat_dir},{converted_lon},{lon_dir},1,{num_satellites},,0,M,0,M,,0000\n'
+        # Use a checksum of zz, and again it will be replaces
+        return f'$GPGGA,xxxxxx.xx,{converted_lat},{lat_dir},{converted_lon},{lon_dir},1,{num_satellites},,0,M,0,M,,*zz\n'
 
     def _build_value(self) -> None:
         self.value = self.value.rstrip().lstrip()
@@ -136,9 +149,18 @@ class GPSSensor(SerialSensorBase):
         chars_from_position = self.value[self._value_position:]
         if chars_from_position.startswith('$GPGGA,xxxxxx.xx'):
             self.__substitute_start_position = self._value_position
-            self.__substitute_end_position = self._value_position + len('$GPGGA,xxxxxx.xx')
+
+            # Find the end checksum
+            self.__substitute_end_position = self.value.find('*zz', self._value_position) + len('*zz') 
+
+            # find the block the right length
+            self.__substitute_value = self.value[self.__substitute_start_position:self.__substitute_end_position]
+
             current_utc = datetime.datetime.utcnow()
-            self.__substitute_value = f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00'
+            self.__substitute_value = self.__substitute_value.replace('xxxxxx.xx', f'{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00')
+
+            checksum = GPSSensor._build_checksum(self.__substitute_value)
+            self.__substitute_value = self.__substitute_value.replace('*zz', '*' + checksum)
 
         if self.__substitute_start_position <= self._value_position and self.__substitute_end_position > self._value_position:
             next_char = self.__substitute_value[self._value_position - self.__substitute_start_position]

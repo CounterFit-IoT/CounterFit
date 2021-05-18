@@ -11,7 +11,7 @@ class SerialSensorBase(SensorBase):
 
         self.__value = ''
         self.__repeat = False
-        self.__repeat_value = ''
+        self._value_position = 0
     
     @staticmethod
     def sensor_type() -> SensorType:
@@ -33,9 +33,7 @@ class SerialSensorBase(SensorBase):
     @value.setter
     def value(self, val: str):
         self.__value = val
-
-        if self.__repeat:
-            self.__repeat_value = self.__value
+        self._value_position = 0
 
     @property
     def repeat(self) -> bool:
@@ -44,20 +42,17 @@ class SerialSensorBase(SensorBase):
     @repeat.setter
     def repeat(self, val: bool):
         self.__repeat = val
-
-        if self.__repeat:
-            self.__repeat_value = self.__value
     
     def read(self):
-        if len(self.value) == 0:
+        if self._value_position >= len(self.value):
             if self.__repeat:
-                self.value = self.__repeat_value
-
-            if len(self.value) == 0:
-                return ''
+                self._value_position = 0
         
-        char = self.value[0]
-        self.value = self.value[1:]
+        if self._value_position >= len(self.value):
+            return ''
+        
+        char = self.value[self._value_position]
+        self._value_position += 1
         return char
     
     def read_line(self):        
@@ -85,6 +80,9 @@ class GPSSensor(SerialSensorBase):
         self.__raw_nmea = ''
         self.__gpx_file_name = ''
         self.__gpx_file_contents = ''
+        self.__substitute_value = ''
+        self.__substitute_start_position = 0
+        self.__substitute_end_position = 0
 
     @staticmethod
     def sensor_name() -> str:
@@ -109,28 +107,48 @@ class GPSSensor(SerialSensorBase):
         lat_dir = "N" if lat > 0 else "S"
         lon_dir = "E" if lon > 0 else "W"
         
-        # use a timestamp of xxxxxx.xxx, and this will be replaced with the current time when the value is requested
-        return f'$GPGGA,xxxxxx.xxx,{converted_lat},{lat_dir},{converted_lon},{lon_dir},1,{num_satellites},,0,M,0,M,,0000'
+        # use a timestamp of xxxxxx.xx, and this will be replaced with the current time when the value is requested
+        return f'$GPGGA,xxxxxx.xx,{converted_lat},{lat_dir},{converted_lon},{lon_dir},1,{num_satellites},,0,M,0,M,,0000\n'
 
     def _build_value(self) -> None:
+        self.value = self.value.rstrip().lstrip()
+
         if self.value_type == GPSValueType.LATLON:            
             self.value = GPSSensor._build_sentence_from_lat_lon_num_satellites(self.lat, self.lon, self.number_of_satellites)
         if self.value_type == GPSValueType.NMEA:
             self.value = self.raw_nmea
+            if not self.value.endswith('\n'):
+                self.value += '\n'
         if self.value_type == GPSValueType.GPX:
             soup = BeautifulSoup(self.gpx_file_contents, 'lxml')
             track_parts = soup.find_all('trkpt')
             for track_part in track_parts:
-                if len(self.value) > 0:
-                    self.value += '\n'
                 self.value += GPSSensor._build_sentence_from_lat_lon_num_satellites(float(track_part['lat']), float(track_part['lon']), 3)
-
+            
     def read(self):
-        # replace any time placeholders with the current UTC time
-        if self.value.startswith('$GPGGA,xxxxxx.xxx'):
+        if self._value_position >= len(self.value):
+            if self.repeat:
+                self._value_position = 0
+        
+        if self._value_position >= len(self.value):
+            return ''
+
+        chars_from_position = self.value[self._value_position:]
+        if chars_from_position.startswith('$GPGGA,xxxxxx.xx'):
+            self.__substitute_start_position = self._value_position
+            self.__substitute_end_position = self._value_position + len('$GPGGA,xxxxxx.xx')
             current_utc = datetime.datetime.utcnow()
-            time_str = f'{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00'
-            self.value = self.value.replace('xxxxxx.xxx', time_str, 1)
+            self.__substitute_value = f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00'
+
+        if self.__substitute_start_position <= self._value_position and self.__substitute_end_position > self._value_position:
+            next_char = self.__substitute_value[self._value_position - self.__substitute_start_position]
+            self._value_position += 1
+            return next_char
+        
+        self.__substitute_start_position = 0
+        self.__substitute_end_position = 0
+        self.__substitute_value = ''
+
         return super().read()
 
     @property

@@ -1,5 +1,6 @@
 # pylint: disable=protected-access,line-too-long
 import datetime
+import time
 
 from CounterFit.serial_sensors import GPSSensor, GPSValueType
 
@@ -78,9 +79,13 @@ def test_gps_gpx():
     current_utc = datetime.datetime.utcnow()
     assert gps.read_line() == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.42,W,1,3,,0,M,0,M,,0000'
 
+    time.sleep(2)
+
     current_utc = datetime.datetime.utcnow()
     assert gps.read_line() == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.4206,W,1,3,,0,M,0,M,,0000'
 
+    time.sleep(2)
+    
     current_utc = datetime.datetime.utcnow()
     assert gps.read_line() == f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0856,N,12215.4092,W,1,3,,0,M,0,M,,0000'
 

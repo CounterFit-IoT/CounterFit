@@ -70,12 +70,9 @@ def test_gps_nmea():
     gps = GPSSensor('/dev/ttyAMA0')
     gps.value_type = GPSValueType.NMEA
 
-    gps.raw_nmea = '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67' + \
-                   '\n' + \
-                   '$GNGGA,020604.001,4739.228833333,S,12207.031866667,E,1,3,,164.7,M,-17.1,M,,*67'
+    gps.raw_nmea = '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
 
     assert gps.read_line() == '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
-    assert gps.read_line() == '$GNGGA,020604.001,4739.228833333,S,12207.031866667,E,1,3,,164.7,M,-17.1,M,,*67'
     assert gps.read_line() == ''
 
 def test_gps_nmea_repeat():
@@ -86,7 +83,99 @@ def test_gps_nmea_repeat():
     gps.repeat = True
 
     for _ in range(0, 20):
-        assert gps.read_line() == '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+        line = gps.read_line()
+        if line == '':
+            time.sleep(1)
+            line = gps.read_line()
+
+        assert line == '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+
+def test_gps_nmea_repeat_has_delay():
+    gps = GPSSensor('/dev/ttyAMA0')
+    gps.value_type = GPSValueType.NMEA
+
+    gps.raw_nmea = '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+    gps.repeat = True
+    
+    line = gps.read_line()
+    assert line == '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+
+    line = gps.read_line()
+    assert line == ''
+
+    line = gps.read_line()
+    assert line == ''
+    
+    line = gps.read_line()
+    assert line == ''
+
+    time.sleep(1)
+
+    line = gps.read_line()
+    assert line == '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+
+def test_gps_nmea_multiple_sentences_has_delay():
+    gps = GPSSensor('/dev/ttyAMA0')
+    gps.value_type = GPSValueType.NMEA
+
+    gps.raw_nmea = '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67' + \
+                   '\n' + \
+                   '$GNGGA,020604.001,4739.228833333,S,12207.031866667,E,1,3,,164.7,M,-17.1,M,,*67'
+    
+    line = gps.read_line()
+    assert line == '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+
+    line = gps.read_line()
+    assert line == ''
+
+    line = gps.read_line()
+    assert line == ''
+    
+    line = gps.read_line()
+    assert line == ''
+
+    time.sleep(1.5)
+
+    line = gps.read_line()
+    assert line == '$GNGGA,020604.001,4739.228833333,S,12207.031866667,E,1,3,,164.7,M,-17.1,M,,*67'
+
+def test_gps_nmea_multiple_sentences_has_delay_only_for_gga():
+    gps = GPSSensor('/dev/ttyAMA0')
+    gps.value_type = GPSValueType.NMEA
+
+    gps.raw_nmea = '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67' + \
+                   '\n' + \
+                   '$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30' + \
+                   '\n' + \
+                   '$GNGGA,020604.001,4739.228833333,S,12207.031866667,E,1,3,,164.7,M,-17.1,M,,*67' + \
+                   '\n' + \
+                   '$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30'
+    
+    line = gps.read_line()
+    assert line == '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+
+    line = gps.read_line()
+    assert line == '$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30'
+
+    line = gps.read_line()
+    assert line == ''
+    
+    line = gps.read_line()
+    assert line == ''
+
+    time.sleep(1)
+
+    line = gps.read_line()
+    assert line == '$GNGGA,020604.001,4739.228833333,S,12207.031866667,E,1,3,,164.7,M,-17.1,M,,*67'
+
+    line = gps.read_line()
+    assert line == '$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30'
+
+    line = gps.read_line()
+    assert line == ''
+    
+    line = gps.read_line()
+    assert line == ''
 
 def test_gps_gpx():
     gps = GPSSensor('/dev/ttyAMA0')
@@ -120,11 +209,26 @@ def test_gps_gpx_repeat():
     gps.repeat = True
     
     for _ in range(0, 20):
-        current_utc = datetime.datetime.utcnow()
-        assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.42,W,1,3,,0,M,0,M,,*')
+        line = gps.read_line()
+        if line == '':
+            time.sleep(1)
+            line = gps.read_line()
 
         current_utc = datetime.datetime.utcnow()
-        assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.4206,W,1,3,,0,M,0,M,,*')
+        assert line == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.42,W,1,3,,0,M,0,M,,*')
 
+        line = gps.read_line()
+        if line == '':
+            time.sleep(1)
+            line = gps.read_line()
+            
         current_utc = datetime.datetime.utcnow()
-        assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0856,N,12215.4092,W,1,3,,0,M,0,M,,*')
+        assert line == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.4206,W,1,3,,0,M,0,M,,*')
+
+        line = gps.read_line()
+        if line == '':
+            time.sleep(1)
+            line = gps.read_line()
+            
+        current_utc = datetime.datetime.utcnow()
+        assert line == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0856,N,12215.4092,W,1,3,,0,M,0,M,,*')

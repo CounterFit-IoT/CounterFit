@@ -12,6 +12,7 @@ class SerialSensorBase(SensorBase):
 
         self.__value = ''
         self.__repeat = False
+        self._next_repeat_time = None
         self._value_position = 0
     
     @staticmethod
@@ -45,8 +46,13 @@ class SerialSensorBase(SensorBase):
         self.__repeat = val
     
     def read(self):
+        current_utc = datetime.datetime.utcnow()
+        if self._next_repeat_time is None:
+            self._next_repeat_time = current_utc + datetime.timedelta(0, 1)
+
         if self._value_position >= len(self.value):
-            if self.__repeat:
+            if self.repeat and current_utc > self._next_repeat_time:
+                self._next_repeat_time = current_utc
                 self._value_position = 0
         
         if self._value_position >= len(self.value):
@@ -84,6 +90,7 @@ class GPSSensor(SerialSensorBase):
         self.__substitute_value = ''
         self.__substitute_start_position = 0
         self.__substitute_end_position = 0
+        self.__next_gpgga_line_time = None
 
     @staticmethod
     def sensor_name() -> str:
@@ -139,14 +146,32 @@ class GPSSensor(SerialSensorBase):
                 self.value += GPSSensor._build_sentence_from_lat_lon_num_satellites(float(track_part['lat']), float(track_part['lon']), 3)
             
     def read(self):
+        current_utc = datetime.datetime.utcnow()
+        
+        if self._next_repeat_time is None:
+            self._next_repeat_time = current_utc + datetime.timedelta(0, 1)
+            
+        if self.__next_gpgga_line_time is None:
+            self.__next_gpgga_line_time = current_utc + datetime.timedelta(0, 1)
+
+        # only repeat after a delay
         if self._value_position >= len(self.value):
-            if self.repeat:
+            if self.repeat and current_utc > self._next_repeat_time:
+                self._next_repeat_time = current_utc + datetime.timedelta(0, 1)
                 self._value_position = 0
         
         if self._value_position >= len(self.value):
             return ''
 
         chars_from_position = self.value[self._value_position:]
+
+        # if we are a newline right before a $GPGGA then wait one second before sending it to space out GPX files or long NMEA data files
+        if self._value_position > 0 and chars_from_position.startswith('$') and chars_from_position[3:].startswith('GGA'):
+            if current_utc > self.__next_gpgga_line_time:
+                self.__next_gpgga_line_time = current_utc + datetime.timedelta(0, 1)
+            else:
+                return ''
+
         if chars_from_position.startswith('$GPGGA,xxxxxx.xx'):
             self.__substitute_start_position = self._value_position
 
@@ -157,7 +182,8 @@ class GPSSensor(SerialSensorBase):
             self.__substitute_value = self.value[self.__substitute_start_position:self.__substitute_end_position]
 
             current_utc = datetime.datetime.utcnow()
-            self.__substitute_value = self.__substitute_value.replace('xxxxxx.xx', f'{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00')
+            time_stamp = f'{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00'
+            self.__substitute_value = self.__substitute_value.replace('xxxxxx.xx', time_stamp)
 
             checksum = GPSSensor._build_checksum(self.__substitute_value)
             self.__substitute_value = self.__substitute_value.replace('*zz', '*' + checksum)

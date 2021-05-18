@@ -232,3 +232,63 @@ def test_gps_gpx_repeat():
             
         current_utc = datetime.datetime.utcnow()
         assert line == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0856,N,12215.4092,W,1,3,,0,M,0,M,,*')
+
+def test_setting_lat_lon_clears_value():
+    gps = GPSSensor('/dev/ttyAMA0')
+    gps.value_type = GPSValueType.NMEA
+
+    gps.raw_nmea = '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+
+    gps.value_type = GPSValueType.LATLON
+
+    gps.lat = -47
+    gps.lon = -122
+    gps.number_of_satellites = 3
+
+    current_utc = datetime.datetime.utcnow()
+
+    expected = add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4700.0,S,12200.0,W,1,3,,0,M,0,M,,*')
+
+    assert gps.read_line() == expected
+    assert gps.read_line() == ''
+
+def test_setting_gpx_clears_value():
+    gps = GPSSensor('/dev/ttyAMA0')
+    gps.value_type = GPSValueType.NMEA
+
+    gps.raw_nmea = '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+
+    gps.value_type = GPSValueType.GPX
+
+    with open('./src/tests/route.gpx', 'r') as gpx_file:
+        gps.gpx_file_contents = gpx_file.read()
+    
+    current_utc = datetime.datetime.utcnow()
+    assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.42,W,1,3,,0,M,0,M,,*')
+
+    time.sleep(2)
+
+    current_utc = datetime.datetime.utcnow()
+    assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0886,N,12215.4206,W,1,3,,0,M,0,M,,*')
+
+    time.sleep(2)
+
+    current_utc = datetime.datetime.utcnow()
+    assert gps.read_line() == add_checksum_to_expected(f'$GPGGA,{current_utc.hour:02d}{current_utc.minute:02d}{current_utc.second:02}.00,4744.0856,N,12215.4092,W,1,3,,0,M,0,M,,*')
+
+    assert gps.read_line() == ''
+
+def test_setting_nmea_clears_value():
+    gps = GPSSensor('/dev/ttyAMA0')
+
+    gps.value_type = GPSValueType.GPX
+
+    with open('./src/tests/route.gpx', 'r') as gpx_file:
+        gps.gpx_file_contents = gpx_file.read()
+    
+    gps.value_type = GPSValueType.NMEA
+
+    gps.raw_nmea = '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+
+    assert gps.read_line() == '$GNGGA,020604.001,4739.228833333,N,12207.031866667,W,1,3,,164.7,M,-17.1,M,,*67'
+    assert gps.read_line() == ''

@@ -131,8 +131,6 @@ class GPSSensor(SerialSensorBase):
         return f'$GPGGA,xxxxxx.xx,{converted_lat},{lat_dir},{converted_lon},{lon_dir},1,{num_satellites},,0,M,0,M,,*zz\n'
 
     def _build_value(self) -> None:
-        self.value = self.value.rstrip().lstrip()
-
         if self.value_type == GPSValueType.LATLON:            
             self.value = GPSSensor._build_sentence_from_lat_lon_num_satellites(self.lat, self.lon, self.number_of_satellites)
         if self.value_type == GPSValueType.NMEA:
@@ -140,6 +138,7 @@ class GPSSensor(SerialSensorBase):
             if not self.value.endswith('\n'):
                 self.value += '\n'
         if self.value_type == GPSValueType.GPX:
+            self.value = ''
             soup = BeautifulSoup(self.gpx_file_contents, 'lxml')
             track_parts = soup.find_all('trkpt')
             for track_part in track_parts:

@@ -111,7 +111,7 @@ def create_actuator():
     print('Create actuator called:', body)
     
     actuator_type = body['type']
-    port = body['port']
+    port = str(body['port'])
 
     for actuator in all_actuators:
         if actuator.actuator_name() == actuator_type:

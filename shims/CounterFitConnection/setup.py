@@ -16,7 +16,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 setup(
     name='counterfit-connection',
     py_modules=['counterfit_connection'],
-    version='0.1.0.dev2',
+    version='0.1.0.dev3',
     description='Connection library library for use with the CounterFit Virtual IoT Device app',
     long_description=long_description,
     long_description_content_type='text/markdown',

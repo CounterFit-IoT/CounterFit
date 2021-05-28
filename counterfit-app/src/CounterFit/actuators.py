@@ -23,6 +23,11 @@ class ActuatorBase(ABC):
     def port(self) -> str:
         return self.__port
 
+    @property
+    #pylint: disable=invalid-name
+    def id(self) -> str:
+        return self.__port
+
 class FloatActuatorBase(ActuatorBase):
     def __init__(self, port:str):
 

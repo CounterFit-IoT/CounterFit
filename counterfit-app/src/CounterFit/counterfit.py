@@ -3,8 +3,11 @@
 import argparse
 import io
 import json
+import uuid
 import webbrowser
 from base64 import b64decode, b64encode
+from eventlet import event
+from eventlet.timeout import Timeout
 from threading import Timer
 
 from flask import Flask, request, render_template
@@ -174,12 +177,61 @@ def get_serial_sensor_line():
     
     return 'Sensor with port ' + str(port) + ' not found', 404
 
+events = {}
+
+def capture_camera_image_response(data):
+    try:
+        e = events[data['uuid']]
+        port = data['port']
+
+        image:str = data['image_base64']
+        image = image.replace('data:image/jpeg;base64,', '').strip()
+        camera_sensor: CameraSensor = sensor_cache[port.lower()]
+        msg = b64decode(image)
+        camera_sensor.value = io.BytesIO(msg)
+
+        e.send(data)
+        del events[data['uuid']]
+    except KeyError:
+        pass
+
+def capture_camera_image(sensor: CameraSensor, port) -> bool:
+    if sensor.image_source == CameraImageSource.WEBCAM:
+        u = str(uuid.uuid4())
+
+        req = {
+            'uuid': u,
+            'port': port
+        }
+
+        socketio.emit('capture_camera_from_webcam' + str(port).replace('/', '').replace(' ', ''), 
+                      req, callback=capture_camera_image_response)
+
+        timeout = Timeout(10)
+        try:
+            e = events[u] = event.Event()
+            e.wait(10)
+        except Timeout:
+            return False
+        finally:
+            events.pop(u, None)
+            timeout.cancel()
+        
+    return True
+
 @app.route('/binary_sensor_data', methods=['GET'])
 def get_binary_sensor_data():
     set_and_send_connected()
     port = str(request.args.get('port', ''))
     if port.lower() in sensor_cache:
+
+        if isinstance(sensor_cache[port.lower()], CameraSensor):
+            camera_sensor: CameraSensor = sensor_cache[port.lower()]
+            if not capture_camera_image(camera_sensor, port):
+                return 'Timeout capturing camera image from webcam for camera ' + str(port), 504
+
         sensor: BinarySensorBase = sensor_cache[port.lower()]
+
         sensor.value.seek(0)
         img_byte = sensor.value.getvalue()
 
@@ -336,7 +388,7 @@ def set_camera_sensor_settings():
             msg = b64decode(body['file_contents'])
             sensor.value = io.BytesIO(msg)
         else:
-            pass
+            sensor.web_cam_device_id = body['web_cam_device_id']
 
     return 'OK', 200
 

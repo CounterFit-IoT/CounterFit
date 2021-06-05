@@ -41,6 +41,7 @@ class CameraSensor(BinarySensorBase):
         super().__init__(name)
         self.__image_source = CameraImageSource.FILE
         self.__image_file_name = ''
+        self.__web_cam_device_id = ''
     
     @staticmethod
     def sensor_name() -> str:
@@ -61,3 +62,11 @@ class CameraSensor(BinarySensorBase):
     @image_file_name.setter
     def image_file_name(self, val: str):
         self.__image_file_name = val
+
+    @property
+    def web_cam_device_id(self) -> str:
+        return self.__web_cam_device_id
+
+    @web_cam_device_id.setter
+    def web_cam_device_id(self, val: str):
+        self.__web_cam_device_id = val

@@ -55,18 +55,20 @@
                     style="display:block"
                 {% endif %}
             >
-                <!-- <div class="row" style="margin-top: 20px;">
-
+                <div class="row" style="margin-top: 20px;">
                     <div class="col">
-                        <label for="image_file_name{{sensor.id}}">Image File:</label>
+                        <label for="web_cam_source{{sensor.id}}">Camera:</label>
                     </div>
                     <div class="col">
-                        {{sensor.image_file_name}}
+                        <select name="web_cam_source{{sensor.id}}" id="web_cam_source{{sensor.id}}" class="form-control">
+                           
+                        </select>
                     </div>
                 </div>
+
                 <div class="row" style="margin-top: 20px;">
-                    <input class="form-control" type="file" id="image_file_name{{sensor.id}}" value="" style="width: 100%;"/>
-                </div> -->
+                    <video id="web_cam{{sensor.id}}" autoplay style="width: 100%;"/></video>
+                </div>
             </div>
 
         </div>
@@ -86,6 +88,10 @@
 
     <script>
         window.addEventListener("DOMContentLoaded", function () {
+            var web_cam = document.getElementById("web_cam{{sensor.id}}");
+            var web_cam_source = document.getElementById("web_cam_source{{sensor.id}}");
+            var running_video = false;
+
             var source_control = document.getElementById("source{{sensor.id}}")
 
             var camera_file_settings_control = document.getElementById("camera_file_settings{{sensor.id}}")
@@ -96,7 +102,48 @@
             var set_button = document.getElementById("sensor_set_button{{sensor.id}}")
             var delete_button = document.getElementById("sensor_delete_button{{sensor.id}}")
 
-            source_control.addEventListener("change", function () {
+            var get_devices = function (mediaDevices) {
+                web_cam_source.innerHTML = '';
+                let count = 1;
+                mediaDevices.forEach(mediaDevice => {
+                    if (mediaDevice.kind === 'videoinput') {
+                        const option = document.createElement('option');
+                        option.value = mediaDevice.deviceId;
+                        const label = mediaDevice.label || `Camera ${count++}`;
+                        const textNode = document.createTextNode(label);
+                        option.appendChild(textNode);
+                        web_cam_source.appendChild(option);
+                    }
+                });
+            }
+
+            var stop_media_tracks = function (stream) {
+                stream.getTracks().forEach(track => {
+                    track.stop();
+                });
+            }
+
+            var select_web_cam = async function (device_id) {
+                if (web_cam.srcObject) {
+                    stop_media_tracks(web_cam.srcObject);
+                }
+
+                var selected_device_Id = {
+                    deviceId : { exact: device_id },
+                    width: { ideal: 4096 },
+                    height: { ideal: 2160 } 
+                }
+
+                const constraints = {
+                    video: selected_device_Id,
+                    audio: false
+                };
+
+                web_cam.srcObject = await navigator.mediaDevices.getUserMedia(constraints)
+                web_cam.play();
+            }
+
+            var set_web_cam_settings = async function () {
                 var selected_source = source_control.value
 
                 if (selected_source == "File") {
@@ -106,8 +153,37 @@
                 else {
                     camera_file_settings_control.style.display = "none"
                     web_cam_settings_control.style.display = "block"
+
+                    if (!running_video) {
+                        running_video = true;
+                        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                            web_cam.srcObject = await navigator.mediaDevices.getUserMedia({ video: true })
+                            navigator.mediaDevices.enumerateDevices().then(get_devices);
+
+                            web_cam_source.addEventListener("change", async function() {
+                                var selected_web_cam_source = web_cam_source.value
+                                await select_web_cam(selected_web_cam_source)
+                            })
+
+                            web_cam.play();
+                        }
+                    }
                 }
-            })
+            }
+
+            if (source_control.value == 'WebCam') {
+                const select_web_cam_for_device = async () => {
+                    await set_web_cam_settings()
+                    device_id = '{{sensor.web_cam_device_id}}'
+                    if (device_id) {                        
+                        await select_web_cam(device_id)
+                        web_cam_source.value = device_id
+                    }
+                }
+                select_web_cam_for_device()
+            }
+
+            source_control.addEventListener("change", set_web_cam_settings)
 
             var array_buffer_to_base64 = function(buffer) {
                 var binary = '';
@@ -150,7 +226,9 @@
                     
                     reader.readAsArrayBuffer(file);
                 }
-                else {                    
+                else {
+                    var selected_web_cam_source = web_cam_source.value
+                    payload["web_cam_device_id"] = selected_web_cam_source
                     post_camera_sensor_settings(payload)
                 }
             });
@@ -167,6 +245,23 @@
                 var data = JSON.stringify(payload);
                 xhr.send(data);
                 location.reload();
+            });
+
+            var socket = io();
+            socket.on('capture_camera_from_webcam{{sensor.id}}', function(data, ack) {
+                console.log('Camera capture received');
+
+                var canvas = document.createElement('canvas');
+                canvas.width = web_cam.videoWidth;
+                canvas.height = web_cam.videoHeight;
+
+                var context = canvas.getContext('2d');
+                context.drawImage(web_cam, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob
+
+                data['image_base64'] = canvas.toDataURL("image/jpeg")
+                ack(data);
             });
         })
     </script>

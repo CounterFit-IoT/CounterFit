@@ -1,0 +1,173 @@
+<div class="card shadow-sm border-secondary" style="margin: 10px;">
+    <div class="card-header py-3 text-white bg-secondary">
+        <div class="container-fluid d-flex align-items-center">
+            <h4 class="my-0 fw-normal">{{ sensor.sensor_name() }}</h4>
+            <h4 class="my-0 fw-normal ms-auto">{{sensor.port}}</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container">
+            <div class="row" style="margin-top: 20px;">
+                <div class="col">
+                    <label for="source{{sensor.id}}">Source:</label>
+                </div>
+                <div class="col">
+                    <select name="source{{sensor.id}}" id="source{{sensor.id}}" class="form-control">
+                        <option value="File"
+                            {% if sensor.image_source.name == "FILE": %}
+                                selected
+                            {% endif %}
+                        >File</option>
+                        <option value="WebCam"
+                            {% if sensor.image_source.name == "WEBCAM": %}
+                                selected
+                            {% endif %}
+                        >WebCam</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="camera_file_settings{{sensor.id}}"
+                {% if sensor.image_source.name == "FILE": %}
+                    style="display:block"
+                {% else %}
+                    style="display:none"
+                {% endif %}
+            >
+                <div class="row" style="margin-top: 20px;">
+
+                    <div class="col">
+                        <label for="image_file_name{{sensor.id}}">Image File:</label>
+                    </div>
+                    <div class="col">
+                        {{sensor.image_file_name}}
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <input class="form-control" type="file" id="image_file_name{{sensor.id}}" value="" style="width: 100%;"/>
+                </div>
+            </div>
+
+            <div id="web_cam_settings{{sensor.id}}"
+                {% if sensor.image_source.name == "FILE": %}
+                    style="display:none"
+                {% else %}
+                    style="display:block"
+                {% endif %}
+            >
+                <!-- <div class="row" style="margin-top: 20px;">
+
+                    <div class="col">
+                        <label for="image_file_name{{sensor.id}}">Image File:</label>
+                    </div>
+                    <div class="col">
+                        {{sensor.image_file_name}}
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <input class="form-control" type="file" id="image_file_name{{sensor.id}}" value="" style="width: 100%;"/>
+                </div> -->
+            </div>
+
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <button id="sensor_set_button{{sensor.id}}" class="w-100 btn btn-lg btn-primary">Set</button>
+                </div>
+                <div class="col">
+                    <button id="sensor_delete_button{{sensor.id}}" class="w-100 btn btn-lg btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            var source_control = document.getElementById("source{{sensor.id}}")
+
+            var camera_file_settings_control = document.getElementById("camera_file_settings{{sensor.id}}")
+            var web_cam_settings_control = document.getElementById("web_cam_settings{{sensor.id}}")
+
+            var image_file_name_control = document.getElementById("image_file_name{{sensor.id}}")
+
+            var set_button = document.getElementById("sensor_set_button{{sensor.id}}")
+            var delete_button = document.getElementById("sensor_delete_button{{sensor.id}}")
+
+            source_control.addEventListener("change", function () {
+                var selected_source = source_control.value
+
+                if (selected_source == "File") {
+                    camera_file_settings_control.style.display = "block"
+                    web_cam_settings_control.style.display = "none"
+                }
+                else {
+                    camera_file_settings_control.style.display = "none"
+                    web_cam_settings_control.style.display = "block"
+                }
+            })
+
+            var array_buffer_to_base64 = function(buffer) {
+                var binary = '';
+                var bytes = new Uint8Array( buffer );
+                var len = bytes.byteLength;
+                for (var i = 0; i < len; i++) {
+                    binary += String.fromCharCode( bytes[ i ] );
+                }
+                return window.btoa( binary );
+            }
+
+            var post_camera_sensor_settings = function (payload) {
+                var xhr = new XMLHttpRequest();
+                var url = "./camera_sensor_settings";
+                xhr.open("POST", url, false);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                var data = JSON.stringify(payload);
+                xhr.send(data);
+            }
+
+            set_button.addEventListener("click", function() {
+                var selected_source = source_control.value
+
+                var payload = {
+                    "port": "{{sensor.port}}",
+                    "source": selected_source
+                }
+
+                if (selected_source == "File") {
+                    const file = image_file_name_control.files[0];
+                    payload["image_file_name"] = file.name
+
+                    const reader = new FileReader();
+                    reader.onload = function(event)
+                    {
+                        var contents = event.target.result;
+                        payload["file_contents"] = array_buffer_to_base64(contents);
+                        post_camera_sensor_settings(payload)
+                    };
+                    
+                    reader.readAsArrayBuffer(file);
+                }
+                else {                    
+                    post_camera_sensor_settings(payload)
+                }
+            });
+
+            delete_button.addEventListener("click", function(){
+                var payload = {
+                    "port": "{{sensor.port}}"
+                }
+
+                var xhr = new XMLHttpRequest();
+                var url = "./delete_sensor";
+                xhr.open("POST", url, false);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                var data = JSON.stringify(payload);
+                xhr.send(data);
+                location.reload();
+            });
+        })
+    </script>
+</div>

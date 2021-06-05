@@ -20,6 +20,10 @@ Examples:
 
         CounterFitConnection.init('192.168.197.1', 5050)
 '''
+# pylint: disable=duplicate-code
+
+from base64 import b64decode
+import io
 import requests
 
 class CounterFitConnection:
@@ -76,6 +80,15 @@ class CounterFitConnection:
         '''
         response = requests.get(CounterFitConnection.base_url + 'serial_sensor_line?port=' + port)
         return str(response.json()['value'])
+    
+    @staticmethod
+    def read_binary_sensor(port: str) -> io.BytesIO:
+        '''
+        Reads a character from the serial sensor on the given port
+        '''
+        response = requests.get(CounterFitConnection.base_url + 'binary_sensor_data?port=' + port)
+        msg = b64decode(response.json()['value'])
+        return io.BytesIO(msg)
     
     @staticmethod
     def set_actuator_float_value(port: int, value: float) -> None:

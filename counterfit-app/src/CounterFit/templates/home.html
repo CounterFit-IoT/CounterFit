@@ -124,6 +124,10 @@
                                     <div id="serial_sensor_create_settings" style="display:none">
                                         {% include "serial_sensor_create_settings.html" %}
                                     </div>
+                                    
+                                    <div id="binary_sensor_create_settings" style="display:none">
+                                        {% include "binary_sensor_create_settings.html" %}
+                                    </div>
 
                                 </div>
                             </div>
@@ -157,6 +161,11 @@
                                         {% if sensor.sensor_name() == "UART GPS": %}
                                             {% with sensor=sensor %}
                                                 {% include "gps_sensor.html" %}
+                                            {% endwith %}
+                                        {% endif %}
+                                        {% if sensor.sensor_name() == "Camera": %}
+                                            {% with sensor=sensor %}
+                                                {% include "camera_sensor.html" %}
                                             {% endwith %}
                                         {% endif %}
                                     </div>
@@ -250,10 +259,12 @@
             var new_actuator_type_control = document.getElementById("new_actuator_type")
             var new_sensor_pin_control = document.getElementById("new_sensor_pin")
             var new_sensor_port_control = document.getElementById("new_sensor_port")
+            var new_sensor_name_control = document.getElementById("new_sensor_name")
             var new_actuator_port_control = document.getElementById("new_actuator_port")
             var new_sensor_units_control = document.getElementById("new_sensor_units")
             var pin_sensor_create_settings = document.getElementById("pin_sensor_create_settings")
             var serial_sensor_create_settings = document.getElementById("serial_sensor_create_settings")
+            var binary_sensor_create_settings = document.getElementById("binary_sensor_create_settings")
 
             new_sensor_type_control.addEventListener("change", function () {
                 var option = new_sensor_type_control.options[new_sensor_type_control.selectedIndex]
@@ -263,10 +274,17 @@
                 if (sensor_type == "SensorType.SERIAL"){
                     pin_sensor_create_settings.style.display = "none"
                     serial_sensor_create_settings.style.display = "block"
+                    binary_sensor_create_settings.style.display = "none"
+                }
+                else if (sensor_type == "SensorType.BINARY"){
+                    pin_sensor_create_settings.style.display = "none"
+                    serial_sensor_create_settings.style.display = "none"
+                    binary_sensor_create_settings.style.display = "block"
                 }
                 else {
                     pin_sensor_create_settings.style.display = "block"
                     serial_sensor_create_settings.style.display = "none"
+                    binary_sensor_create_settings.style.display = "none"
                 }
             })
 
@@ -275,11 +293,13 @@
                 var new_sensor_unit = new_sensor_units_control.value
                 var new_sensor_pin = parseInt(new_sensor_pin_control.value)
                 var new_sensor_port = new_sensor_port_control.value
+                var new_sensor_name = new_sensor_name_control.value
 
                 var payload = {
                     'type': new_sensor_type,
                     'pin': new_sensor_pin,
                     'port': new_sensor_port,
+                    'name': new_sensor_name,
                     'unit': new_sensor_unit
                 }
 

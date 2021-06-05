@@ -26,7 +26,7 @@ class SerialSensorBase(SensorBase):
 
     @property
     def id(self) -> str:
-        return self.port.replace('/', '')
+        return self.port.replace('/', '').replace(' ', '')
 
     @property
     def value(self) -> str:

@@ -4,7 +4,7 @@ Tests the CounterFit app connection
 To run this test, ensure you have the CounterFit Virtual IoT Device app running
 
 '''
-# pylint: disable=redefined-outer-name,unused-argument
+# pylint: disable=redefined-outer-name,unused-argument,duplicate-code
 
 import pytest
 
@@ -34,10 +34,20 @@ def test_init_counterfit_device():
 #     assert CounterFitConnection.read_serial_sensor_char('/dev/ttyAMA0') == 'l'
 #     assert CounterFitConnection.read_serial_sensor_char('/dev/ttyAMA0') == 'o'
 
-def test_read_serial_line():
+# def test_read_serial_line():
+#     '''
+#     Tests reading a line from a serial sensor on port /dev/ttyAMA0 containing the text 'hello\nworld'
+#     '''
+#     CounterFitConnection.init('127.0.0.1', 5000)
+#     assert CounterFitConnection.read_serial_sensor_line('/dev/ttyAMA0') == 'hello'
+#     assert CounterFitConnection.read_serial_sensor_line('/dev/ttyAMA0') == 'world'
+
+def test_camera_image():
     '''
-    Tests reading a line from a serial sensor on port /dev/ttyAMA0 containing the text 'hello\nworld'
+    Tests reading an image from a camera sensor. The image is saved locally
     '''
     CounterFitConnection.init('127.0.0.1', 5000)
-    assert CounterFitConnection.read_serial_sensor_line('/dev/ttyAMA0') == 'hello'
-    assert CounterFitConnection.read_serial_sensor_line('/dev/ttyAMA0') == 'world'
+    image_data = CounterFitConnection.read_binary_sensor('Picamera')
+
+    with open('test_image.png', 'wb') as image_file:
+        image_file.write(image_data.read())

@@ -8,6 +8,7 @@ class SensorType(Enum):
     INTEGER = 2
     BOOLEAN = 3
     SERIAL = 4
+    BINARY = 5
 
 class SensorBase(ABC):
     def __init__(self, port:str):
@@ -323,6 +324,16 @@ class LightSensor(AnalogSensor):
     @staticmethod
     def sensor_name() -> str:
         return 'Light'
+
+class UVSensor(AnalogSensor):
+    @staticmethod
+    def sensor_name() -> str:
+        return 'UV'
+
+class IRSensor(AnalogSensor):
+    @staticmethod
+    def sensor_name() -> str:
+        return 'IR'
 
 class SoilMoistureSensor(AnalogSensor):
     @staticmethod

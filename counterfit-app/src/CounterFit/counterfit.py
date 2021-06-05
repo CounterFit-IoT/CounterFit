@@ -1,14 +1,18 @@
 # pylint: disable=C0103,E0401,W0603
 
 import argparse
+import io
 import json
 import webbrowser
+from base64 import b64decode, b64encode
 from threading import Timer
+
 from flask import Flask, request, render_template
 from flask_socketio import SocketIO
 
 from CounterFit.sensors import SensorBase, SensorType
 from CounterFit.serial_sensors import GPSSensor, GPSValueType, SerialSensorBase
+from CounterFit.binary_sensors import BinarySensorBase, CameraImageSource, CameraSensor
 from CounterFit.actuators import ActuatorBase
 
 app = Flask(__name__)
@@ -80,12 +84,17 @@ def create_pin_sensor(sensor, body):
     else:
         new_sensor = sensor(port)
 
-    sensor_cache[port] = new_sensor
+    sensor_cache[port.lower()] = new_sensor
 
 def create_serial_sensor(sensor, body):
     port = body['port']
     new_sensor = sensor(port)
-    sensor_cache[port] = new_sensor
+    sensor_cache[port.lower()] = new_sensor
+
+def create_binary_sensor(sensor, body):
+    name = body['name']
+    new_sensor = sensor(name)
+    sensor_cache[name.lower()] = new_sensor
 
 @app.route('/create_sensor', methods=['POST'])
 def create_sensor():
@@ -99,6 +108,8 @@ def create_sensor():
         if sensor.sensor_name() == sensor_type:
             if sensor.sensor_type() == SensorType.SERIAL:
                 create_serial_sensor(sensor, body)
+            elif sensor.sensor_type() == SensorType.BINARY:
+                create_binary_sensor(sensor, body)
             else:
                 create_pin_sensor(sensor, body)
 
@@ -117,7 +128,7 @@ def create_actuator():
         if actuator.actuator_name() == actuator_type:
             new_actuator = actuator(port)
 
-            actuator_cache[port] = new_actuator
+            actuator_cache[port.lower()] = new_actuator
 
     return 'OK', 200
 
@@ -125,8 +136,8 @@ def create_actuator():
 def get_sensor_value():
     set_and_send_connected()
     port = str(request.args.get('port', ''))
-    if port in sensor_cache:
-        sensor = sensor_cache[port]
+    if port.lower() in sensor_cache:
+        sensor = sensor_cache[port.lower()]
         
         response = {'value' : sensor.value}
         print('Returning sensor value', response, 'for port', port)
@@ -139,8 +150,8 @@ def get_sensor_value():
 def get_serial_sensor_character():
     set_and_send_connected()
     port = str(request.args.get('port', ''))
-    if port in sensor_cache:
-        sensor: SerialSensorBase = sensor_cache[port]
+    if port.lower() in sensor_cache:
+        sensor: SerialSensorBase = sensor_cache[port.lower()]
         
         response = {'value' : sensor.read()}
         print('Returning sensor value', response, 'for port', port)
@@ -153,8 +164,8 @@ def get_serial_sensor_character():
 def get_serial_sensor_line():
     set_and_send_connected()
     port = str(request.args.get('port', ''))
-    if port in sensor_cache:
-        sensor: SerialSensorBase = sensor_cache[port]
+    if port.lower() in sensor_cache:
+        sensor: SerialSensorBase = sensor_cache[port.lower()]
         
         response = {'value' : sensor.read_line()}
         print('Returning sensor value', response, 'for port', port)
@@ -162,6 +173,23 @@ def get_serial_sensor_line():
         return json.dumps(response)
     
     return 'Sensor with port ' + str(port) + ' not found', 404
+
+@app.route('/binary_sensor_data', methods=['GET'])
+def get_binary_sensor_data():
+    set_and_send_connected()
+    port = str(request.args.get('port', ''))
+    if port.lower() in sensor_cache:
+        sensor: BinarySensorBase = sensor_cache[port.lower()]
+        sensor.value.seek(0)
+        img_byte = sensor.value.getvalue()
+
+        response = {'value' : b64encode(img_byte).decode()}
+        print('Returning sensor value', str(response)[0:500], 'for port', port)
+
+        return json.dumps(response)
+    
+    return 'Sensor with port ' + str(port) + ' not found', 404
+
 
 @app.route('/delete_sensor', methods=['POST'])
 def delete_sensor():
@@ -171,8 +199,8 @@ def delete_sensor():
 
     port = body['port']
 
-    if port in sensor_cache:
-        del sensor_cache[port]
+    if port.lower() in sensor_cache:
+        del sensor_cache[port.lower()]
 
     return 'OK', 200
 
@@ -184,8 +212,8 @@ def delete_actuator():
 
     port = body['port']
 
-    if port in actuator_cache:
-        del actuator_cache[port]
+    if port.lower() in actuator_cache:
+        del actuator_cache[port.lower()]
 
     return 'OK', 200
 
@@ -201,8 +229,8 @@ def set_float_sensor_settings():
     random_min = body['random_min']
     random_max = body['random_max']
 
-    if port in sensor_cache:
-        sensor = sensor_cache[port]
+    if port.lower() in sensor_cache:
+        sensor = sensor_cache[port.lower()]
         sensor.value = value
         sensor.random = is_random
         sensor.random_min = random_min
@@ -222,8 +250,8 @@ def set_integer_sensor_settings():
     random_min = body['random_min']
     random_max = body['random_max']
 
-    if port in sensor_cache:
-        sensor = sensor_cache[port]
+    if port.lower() in sensor_cache:
+        sensor = sensor_cache[port.lower()]
         sensor.value = value
         sensor.random = is_random
         sensor.random_min = random_min
@@ -240,8 +268,8 @@ def set_led_actuator_settings():
     port = body['port']
     color = body['color']
 
-    if port in actuator_cache:
-        actuator = actuator_cache[port]
+    if port.lower() in actuator_cache:
+        actuator = actuator_cache[port.lower()]
         actuator.color = color
 
     return 'OK', 200
@@ -256,8 +284,8 @@ def set_boolean_sensor_settings():
     value = body['value']
     is_random = body['is_random']
 
-    if port in sensor_cache:
-        sensor = sensor_cache[port]
+    if port.lower() in sensor_cache:
+        sensor = sensor_cache[port.lower()]
         sensor.value = value
         sensor.random = is_random
 
@@ -271,8 +299,8 @@ def set_gps_sensor_settings():
 
     port = body['port']
 
-    if port in sensor_cache:
-        sensor : GPSSensor = sensor_cache[port]
+    if port.lower() in sensor_cache:
+        sensor : GPSSensor = sensor_cache[port.lower()]
         sensor.repeat = body['repeat']
         source = body['source']
 
@@ -288,6 +316,27 @@ def set_gps_sensor_settings():
             sensor.value_type = GPSValueType.GPX
             sensor.gpx_file_contents = body['gpx']
             sensor.gpx_file_name = body['gpx_file_name']
+
+    return 'OK', 200
+
+@app.route('/camera_sensor_settings', methods=['POST'])
+def set_camera_sensor_settings():
+    body = request.get_json()
+    
+    print('Camera sensor settings called:', str(body)[0:500])
+
+    port = body['port']
+
+    if port.lower() in sensor_cache:
+        sensor : CameraSensor = sensor_cache[port.lower()]
+        sensor.image_source = CameraImageSource.FILE if body['source'] == 'File' else CameraImageSource.WEBCAM
+
+        if sensor.image_source == CameraImageSource.FILE:
+            sensor.image_file_name = body['image_file_name']
+            msg = b64decode(body['file_contents'])
+            sensor.value = io.BytesIO(msg)
+        else:
+            pass
 
     return 'OK', 200
 
@@ -321,8 +370,8 @@ def set_actuator_value():
 
     value = body['value']
 
-    if port in actuator_cache:
-        actuator = actuator_cache[port]
+    if port.lower() in actuator_cache:
+        actuator = actuator_cache[port.lower()]
         actuator.value = value
 
         socketio.emit('actuator_change' + str(port), {'port':port, 'value': value})

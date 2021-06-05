@@ -15,7 +15,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 setup(
     name='counterfit-shims-picamera',
     packages=find_packages(include=['counterfit_shims_picamera']),
-    version='0.1.0.dev4',
+    version='0.1.0.dev5',
     description='Shims for the PiCamera library for the CounterFit virtual IoT device app',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -37,7 +37,7 @@ setup(
         "Programming Language :: Python :: 3.9"
     ],
     keywords="iot picamera camera virtual hardware",
-    install_requires=['requests','counterfit-connection'],
+    install_requires=['requests','counterfit-connection','pillow'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest==4.4.1'],
     test_suite='tests',

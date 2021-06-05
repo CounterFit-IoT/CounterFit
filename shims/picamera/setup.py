@@ -5,7 +5,7 @@ Shims for the Picamera library for use with the CounterFit Virtual IoT Device ap
 
 from codecs import open
 from os import path
-from setuptools import setup
+from setuptools import find_packages, setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -14,8 +14,8 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name='counterfit-shims-picamera',
-    py_modules=['counterfit_shims_picamera'],
-    version='0.1.0.dev3',
+    packages=find_packages(include=['counterfit_shims_picamera']),
+    version='0.1.0.dev4',
     description='Shims for the PiCamera library for the CounterFit virtual IoT device app',
     long_description=long_description,
     long_description_content_type='text/markdown',

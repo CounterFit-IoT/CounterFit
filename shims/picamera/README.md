@@ -16,7 +16,7 @@ To use these shims, you will need to install [CounterFit](https://github.com/Cou
     pip install counterfit-shims-picamera
     ```
 
-* Import Picamera using the `counterfit_shims_picamera` package instead of the `picamera` package, as well as importing the `CounterFitConnection` from the `counterfit_shims_grove.counterfit_connection` module:
+* Import Picamera using the `counterfit_shims_picamera` package instead of the `picamera` package, as well as importing the `CounterFitConnection` from the `counterfit_connection` module:
 
     ```python
     from counterfit_connection import CounterFitConnection

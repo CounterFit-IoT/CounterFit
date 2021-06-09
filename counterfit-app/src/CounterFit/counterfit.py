@@ -16,6 +16,7 @@ from flask_socketio import SocketIO
 from CounterFit.sensors import SensorBase, SensorType
 from CounterFit.serial_sensors import GPSSensor, GPSValueType, SerialSensorBase
 from CounterFit.binary_sensors import BinarySensorBase, CameraImageSource, CameraSensor
+from CounterFit.i2c_sensors import I2CSensorBase
 from CounterFit.actuators import ActuatorBase
 
 app = Flask(__name__)
@@ -46,10 +47,12 @@ all_actuators = sorted(all_actuators, key=lambda a: a.actuator_name())
 @app.route('/', methods=['GET'])
 def home():
     ports = []
-    for port in range(0, 26):
+    ports_and__hex = []
+    for port in range(0, 127):
         str_port = str(port)
         if str_port not in sensor_cache and str_port not in actuator_cache:
             ports.append(str_port)
+            ports_and__hex.append((str_port, f'0x{port:02x}'))
 
     return render_template('home.html', 
                            sensors=sensor_cache.values(),
@@ -57,7 +60,8 @@ def home():
                            all_sensors=all_sensors,
                            all_actuators=all_actuators,
                            is_connected = is_connected,
-                           ports=ports)
+                           ports=ports,
+                           ports_and__hex=ports_and__hex)
 
 def set_and_send_connected(connected:bool = True) -> None:
     global is_connected
@@ -99,6 +103,12 @@ def create_binary_sensor(sensor, body):
     new_sensor = sensor(name)
     sensor_cache[name.lower()] = new_sensor
 
+def create_i2c_sensor(sensor, body):
+    port = str(body['i2c_pin'])
+    unit = body['i2c_unit']
+    new_sensor = sensor(port, unit)
+    sensor_cache[port.lower()] = new_sensor
+
 @app.route('/create_sensor', methods=['POST'])
 def create_sensor():
     body = request.get_json()
@@ -113,6 +123,8 @@ def create_sensor():
                 create_serial_sensor(sensor, body)
             elif sensor.sensor_type() == SensorType.BINARY:
                 create_binary_sensor(sensor, body)
+            elif sensor.sensor_type() == SensorType.I2C:
+                create_i2c_sensor(sensor, body)
             else:
                 create_pin_sensor(sensor, body)
 
@@ -403,9 +415,7 @@ def get_sensor_units():
     #pylint: disable=R1705
     for sensor in all_sensors:
         if sensor.sensor_name() == sensor_type:
-            if sensor.sensor_type() == SensorType.FLOAT:
-                return {'units':sensor.sensor_units()}
-            elif sensor.sensor_type() == SensorType.INTEGER:
+            if sensor.sensor_type() == SensorType.FLOAT or sensor.sensor_type() == SensorType.INTEGER or sensor.sensor_type() == SensorType.I2C:
                 return {'units':sensor.sensor_units()}
             else:
                 return {'units':[]}

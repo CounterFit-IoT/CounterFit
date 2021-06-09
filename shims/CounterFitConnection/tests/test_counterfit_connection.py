@@ -7,6 +7,7 @@ To run this test, ensure you have the CounterFit Virtual IoT Device app running
 # pylint: disable=redefined-outer-name,unused-argument,duplicate-code
 
 import pytest
+import time
 
 from counterfit_connection import CounterFitConnection
 
@@ -51,3 +52,19 @@ def test_camera_image():
 
     with open('test_image.png', 'wb') as image_file:
         image_file.write(image_data.read())
+
+def test_is_connected():
+    '''
+    Tests is connected. Make sure counterfit is running
+    '''
+    CounterFitConnection.init('127.0.0.1', 5000)
+    assert CounterFitConnection.is_connected()
+
+def test_is_connected_is_false():
+    '''
+    Tests is connected. Make sure counterfit is running until you see a message telling you to close it
+    '''
+    CounterFitConnection.init('127.0.0.1', 5000)
+    print("Please close counterfit")
+    time.sleep(10)
+    assert not CounterFitConnection.is_connected()

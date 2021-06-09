@@ -1,12 +1,11 @@
 '''
-Connection library library for use with the CounterFit Virtual IoT Device app
+Shims for the rpi_vl53l0x library for use with the CounterFit Virtual IoT Device app
 '''
-
 # pylint: disable=redefined-builtin
 
 from codecs import open
 from os import path
-from setuptools import setup
+from setuptools import find_packages, setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -14,10 +13,10 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name='counterfit-connection',
-    py_modules=['counterfit_connection'],
-    version='0.1.0.dev5',
-    description='Connection library library for use with the CounterFit Virtual IoT Device app',
+    name='rpi-vl53l0x',
+    packages=find_packages(include=['rpi_vl53l0x']),
+    version='0.1.0.dev1',
+    description='Shims for the rpi_vl53l0x library for the CounterFit virtual IoT device app',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Jim Bennett',
@@ -37,8 +36,8 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9"
     ],
-    keywords="iot grove seeed virtual hardware",
-    install_requires=['requests'],
+    keywords="iot rpi_vl53l0x vl53l0x virtual hardware",
+    install_requires=['requests','counterfit-connection'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest==4.4.1'],
     test_suite='tests',

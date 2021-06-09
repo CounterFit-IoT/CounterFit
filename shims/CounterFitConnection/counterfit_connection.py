@@ -20,7 +20,7 @@ Examples:
 
         CounterFitConnection.init('192.168.197.1', 5050)
 '''
-# pylint: disable=duplicate-code
+# pylint: disable=duplicate-code,bare-except
 
 from base64 import b64decode
 import io
@@ -103,3 +103,14 @@ class CounterFitConnection:
         Sends a bool value to the actuator on the given port
         '''
         requests.post(CounterFitConnection.base_url + 'actuator_value?port=' + str(port), json= {'value':value})
+    
+    @staticmethod
+    def is_connected() -> bool:
+        '''
+        Determines if CounterFit is running
+        '''
+        try:
+            requests.post(CounterFitConnection.base_url + 'connect')
+            return True
+        except:
+            return False

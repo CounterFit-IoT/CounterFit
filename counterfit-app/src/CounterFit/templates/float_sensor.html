@@ -28,7 +28,11 @@
                     <label for="value{{sensor.id}}">Value:</label>
                 </div>
                 <div class="col">
-                    <input class="form-control" type="number" id="value{{sensor.id}}" value="{{sensor.value}}" style="width: 100%;"/>
+                    <input class="form-control" type="number" id="value{{sensor.id}}" value="{{sensor.value}}" style="width: 100%;"
+                        {% if sensor.random: %}
+                            disabled
+                        {% endif %}
+                    />
                 </div>
             </div>
             <div class="row" style="margin-top: 20px;">
@@ -53,10 +57,18 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <input class="form-control" type="number" id="random_min{{sensor.id}}" value="{{sensor.random_min}}" style="width: 100%;" disabled/>
+                    <input class="form-control" type="number" id="random_min{{sensor.id}}" value="{{sensor.random_min}}" style="width: 100%;"
+                        {% if not sensor.random: %}
+                            disabled
+                        {% endif %}
+                    />
                 </div>
                 <div class="col">
-                    <input class="form-control" type="number" id="random_max{{sensor.id}}" value="{{sensor.random_max}}" style="width: 100%;" disabled/>
+                    <input class="form-control" type="number" id="random_max{{sensor.id}}" value="{{sensor.random_max}}" style="width: 100%;"
+                        {% if not sensor.random: %}
+                            disabled
+                        {% endif %}
+                    />
                 </div>
             </div>
         </div>

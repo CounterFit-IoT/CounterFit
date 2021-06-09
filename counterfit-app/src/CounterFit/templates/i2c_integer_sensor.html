@@ -2,7 +2,7 @@
     <div class="card-header py-3 text-white bg-secondary">
         <div class="container-fluid d-flex align-items-center">
             <h4 class="my-0 fw-normal">{{ sensor.sensor_name() }}</h4>
-            <h4 class="my-0 fw-normal ms-auto">Pin {{sensor.port}}</h4>
+            <h4 class="my-0 fw-normal ms-auto">I<sup>2</sup>C: {{sensor.address}}</h4>
         </div>
     </div>
     <div class="card-body">
@@ -20,7 +20,7 @@
                     Value range:
                 </div>
                 <div class="col">
-                    {{ "{:,d}".format(sensor.valid_min) }} to {{ "{:,d}".format(sensor.valid_max) }}
+                    {{ "{:,.2f}".format(sensor.valid_min) }} to {{ "{:,.2f}".format(sensor.valid_max) }}
                 </div>
             </div>
             <div class="row" style="margin-top: 20px;">
@@ -28,10 +28,10 @@
                     <label for="value{{sensor.id}}">Value:</label>
                 </div>
                 <div class="col">
-                    <input class="form-control" type="number" step="1" pattern="\d+" id="value{{sensor.id}}" value="{{sensor.value}}" style="width: 100%;"
-                        {% if sensor.random: %}
-                            disabled
-                        {% endif %}
+                    <input class="form-control" type="number" id="value{{sensor.id}}" value="{{sensor.value}}" style="width: 100%;"
+                    {% if sensor.random: %}
+                        disabled
+                    {% endif %}
                     />
                 </div>
             </div>
@@ -57,14 +57,14 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <input class="form-control" type="number" step="1" pattern="\d+" id="random_min{{sensor.id}}" value="{{sensor.random_min}}" style="width: 100%;"
+                    <input class="form-control" type="number" id="random_min{{sensor.id}}" value="{{sensor.random_min}}" style="width: 100%;"
                         {% if not sensor.random: %}
                             disabled
                         {% endif %}
                     />
                 </div>
                 <div class="col">
-                    <input class="form-control" type="number" step="1" pattern="\d+" id="random_max{{sensor.id}}" value="{{sensor.random_max}}" style="width: 100%;"
+                    <input class="form-control" type="number" id="random_max{{sensor.id}}" value="{{sensor.random_max}}" style="width: 100%;"
                         {% if not sensor.random: %}
                             disabled
                         {% endif %}
@@ -104,9 +104,9 @@
             set_button.addEventListener("click", function() {
                 // get the values
                 var is_random = is_random_control.checked
-                var random_min = parseInt(random_min_control.value)
-                var random_max = parseInt(random_max_control.value)
-                var value = parseInt(value_control.value)
+                var random_min = parseFloat(random_min_control.value)
+                var random_max = parseFloat(random_max_control.value)
+                var value = parseFloat(value_control.value)
 
                 var payload = {
                     "port": "{{sensor.port}}",
@@ -117,7 +117,7 @@
                 }
 
                 var xhr = new XMLHttpRequest();
-                var url = "./integer_sensor_settings";
+                var url = "./float_sensor_settings";
                 xhr.open("POST", url, false);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 var data = JSON.stringify(payload);

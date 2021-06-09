@@ -12,7 +12,11 @@
                     <label for="value{{sensor.id}}">Value:</label>
                 </div>
                 <div class="col">
-                    <input class="form-check-input" type="checkbox" id="value{{sensor.id}}" value="{{sensor.value}}"/>
+                    <input class="form-check-input" type="checkbox" id="value{{sensor.id}}" value="{{sensor.value}}"
+                        {% if sensor.random: %}
+                            disabled
+                        {% endif %}
+                    />
                 </div>
             </div>
             <div class="row" style="margin-top: 20px;">

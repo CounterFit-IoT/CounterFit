@@ -9,6 +9,7 @@ class SensorType(Enum):
     BOOLEAN = 3
     SERIAL = 4
     BINARY = 5
+    I2C = 6
 
 class SensorBase(ABC):
     def __init__(self, port:str):

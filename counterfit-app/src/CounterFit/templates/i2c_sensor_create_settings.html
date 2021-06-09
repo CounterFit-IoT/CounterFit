@@ -1,0 +1,21 @@
+<div class="row" style="margin-top: 20px;">
+    <div class="col">
+        <label for="new_i2c_sensor_units">Units:</label>
+    </div>
+    <div class="col">
+        <select name="new_i2c_sensor_units" id="new_i2c_sensor_units" class="form-control">
+        </select>
+    </div>
+</div>
+<div class="row" style="margin-top: 20px;">
+    <div class="col">
+        <label for="new_i2c_sensor_pin">I<sup>2</sup>C address:</label>
+    </div>
+    <div class="col">
+        <select name="new_i2c_sensor_pin" id="new_i2c_sensor_pin" class="form-control">
+            {% for port in ports_and__hex %}
+            <option value="{{ port[0] }}">{{ port[1] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>

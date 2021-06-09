@@ -13,8 +13,8 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name='rpi-vl53l0x',
-    packages=find_packages(include=['rpi_vl53l0x']),
+    name='counterfit-shims-rpi-vl53l0x',
+    packages=find_packages(include=['counterfit_shims_rpi_vl53l0x']),
     version='0.1.0.dev1',
     description='Shims for the rpi_vl53l0x library for the CounterFit virtual IoT device app',
     long_description=long_description,

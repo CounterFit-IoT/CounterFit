@@ -168,6 +168,11 @@
                                                     {% include "i2c_float_sensor.html" %}
                                                 {% endwith %}
                                             {% endif %}
+                                            {% if sensor.sensor_unit_type().name == "INTEGER" %}
+                                                {% with sensor=sensor %}
+                                                    {% include "i2c_integer_sensor.html" %}
+                                                {% endwith %}
+                                            {% endif %}
                                         {% endif %}
                                         {% if sensor.sensor_name() == "UART GPS": %}
                                             {% with sensor=sensor %}

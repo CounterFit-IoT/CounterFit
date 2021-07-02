@@ -6,4 +6,4 @@ from CounterFit.binary_sensors import *
 from CounterFit.i2c_sensors import *
 from CounterFit.actuators import *
 
-__version__ = "0.1.3.dev28"
+__version__ = "0.1.3.dev29"

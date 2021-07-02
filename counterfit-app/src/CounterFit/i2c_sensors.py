@@ -131,7 +131,7 @@ class IntegerI2CSensorBase(I2CSensorBase):
     @property
     def value(self) -> int:
         if self._random:
-            random.randint(self.__random_min, self.__random_max)
+            return random.randint(self.__random_min, self.__random_max)
 
         return self.__value
 

@@ -40,7 +40,7 @@ This project is seriously under construction! Please let me know if you want to 
 * Run the app:
 
     ```sh
-    CounterFit
+    counterfit
     ```
 
 * The app will launch, listening for web requests on port 5000, and open a web browser for you to start adding virtual sensors and actuators to your project
@@ -50,7 +50,7 @@ This project is seriously under construction! Please let me know if you want to 
 To use a different port than the default 5000, set the `--port` option when you run the app:
 
 ```sh
-CounterFit --port 5050
+counterfit --port 5050
 ```
 
 ## Shims

@@ -46,7 +46,7 @@ This will install the [CounterFit](https://github.com/CounterFit-IoT/CounterFit/
     > If you want to change the port, pass it is as the `--port` parameter when launching `CounterFit`
 
 * Create a **button** on **pin 1**, and a **temperature sensor** on **pin 2**, and a **relay** on **pin 3**
-![Screenshot of the used setup](/assets/hardwareSetup.png)
+![Screenshot of the used setup](https://github.com/AChillFeeder/CounterFit/blob/temperature_button_relay_example/samples/grove/button-temperature-sensor-controlled-relay/assets/HardwareSetup.png)
 
 ## Run the code
 

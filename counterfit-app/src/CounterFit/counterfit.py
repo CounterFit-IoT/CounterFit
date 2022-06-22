@@ -455,8 +455,8 @@ def main():
     if args.dontopen is None:
         print("Loading browser...")
         Timer(3, open_browser, [args.port]).start()
-    
-    socketio.run(app, port=args.port)
+
+    socketio.run(app, host='0.0.0.0', port=args.port)
 
 if __name__ == '__main__':
     main()

@@ -446,12 +446,15 @@ def open_browser(port):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', metavar='port', type=int, default=5000, help='the port to run on')
+    parser.add_argument('--dontopen', action='store_true', help='If this is present, CounterFit is not automatically opened in a browser')
 
     args = parser.parse_args()
 
     print(f'CounterFit - virtual IoT hardware running on port {args.port}')
 
-    Timer(3, open_browser, [args.port]).start()
+    if args.dontopen is None:
+        print("Loading browser...")
+        Timer(3, open_browser, [args.port]).start()
     
     socketio.run(app, port=args.port)
 

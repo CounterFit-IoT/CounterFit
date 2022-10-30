@@ -3,7 +3,7 @@ This is the code for
     - `Grove Base Hat for RPi      <https://www.seeedstudio.com/Grove-WS2813-RGB-LED-Strip-Waterproof-60-LED-m-1m-p-3126.html>`_
     - `Grove Base Hat for RPi Zero <https://www.seeedstudio.com/Grove-Base-Hat-for-Raspberry-Pi-Zero-p-3187.html>`_
 
-Grove Base Hat incorparates a micro controller STM32F030F4.
+Grove Base Hat incorporates a micro controller STM32F030F4.
 
 Raspberry Pi does not have ADC unit, so we use an external chip
 to transmit analog data to raspberry pi.

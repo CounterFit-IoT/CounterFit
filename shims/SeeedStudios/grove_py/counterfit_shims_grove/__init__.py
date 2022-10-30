@@ -4,7 +4,7 @@ CounterFit Virtual IoT Device shims for Grove sensors.
 This library provides shims that mimic the Grove Python libraries from:
     https://github.com/Seeed-Studio/grove.py
 
-These shims don't communicate with real hardware, instead they communicate with a running instace of
+These shims don't communicate with real hardware, instead they communicate with a running instance of
 the CounterFit Virtual IoT Device app
 '''
 

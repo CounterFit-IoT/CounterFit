@@ -29,7 +29,7 @@ To use these shims, you will need to install [CounterFit](https://github.com/Cou
     CounterFitConnection.init('127.0.0.1', 5000)
     ```
 
-* Write your Grove code as usual. The default assumes you hve a light sensor on pin 0, IR on pin 1 and UV on pin 2. You can change these passing additional arguments to the init
+* Write your Grove code as usual. The default assumes you have a light sensor on pin 0, IR on pin 1 and UV on pin 2. You can change these passing additional arguments to the init
 
     ```python
     sensor =.si114x()

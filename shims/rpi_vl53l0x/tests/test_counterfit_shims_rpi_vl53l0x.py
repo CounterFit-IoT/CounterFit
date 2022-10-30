@@ -1,7 +1,7 @@
 '''
 Tests the RPI VL53L0X connection
 
-Create a distance sensor at the address 0x29 and set teh distance to 100mm
+Create a distance sensor at the address 0x29 and set the distance to 100mm
 
 '''
 # pylint: disable=redefined-outer-name,unused-argument

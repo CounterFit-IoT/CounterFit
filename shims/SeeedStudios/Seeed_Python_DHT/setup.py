@@ -15,7 +15,7 @@ setup(
     name='counterfit-shims-seeed-python-dht',
     py_modules=['counterfit_shims_seeed_python_dht'],
     version='0.1.0.dev1',
-    description='Shims for the Seeed Grove DBT for the CounterFit virtual IoT device app',
+    description='Shims for the Seeed Grove DHT for the CounterFit virtual IoT device app',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Jim Bennett',

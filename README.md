@@ -31,6 +31,26 @@ This project is seriously under construction! Please let me know if you want to 
 
 ## Installing and running the app
 
+* **Windows only**
+
+  On Windows you will need to manually download and install the wheel for libxml2.
+
+  From the [Unofficial Windows Binaries for Python Extension Packages page](https://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml) download lxml 4.9 for your version of Python and OS version. For example, if you are using 64-bit Windows with Python 3.11, download `lxml‑4.9.0‑cp311‑cp311‑win_amd64.whl`.
+
+  Install this using `pip`:
+
+  ```bash
+  pip install <path to download>\<file name>
+  ```
+
+  For example, if you are using 64-bit Windows with Python 3.11 and downloaded it to `c:\temp`, you would run:
+
+  ```bash
+  pip install c:\temp\lxml‑4.9.0‑cp311‑cp311‑win_amd64.whl
+  ```
+
+  You do not need to do this step if you are on Linux or macOS.
+
 * Install the CounterFit app:
 
     ```sh

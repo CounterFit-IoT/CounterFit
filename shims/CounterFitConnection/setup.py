@@ -1,5 +1,5 @@
 '''
-Connection library library for use with the CounterFit Virtual IoT Device app
+Connection library for use with the CounterFit Virtual IoT Device app
 '''
 
 # pylint: disable=redefined-builtin
@@ -17,7 +17,7 @@ setup(
     name='counterfit-connection',
     py_modules=['counterfit_connection'],
     version='0.1.0.dev5',
-    description='Connection library library for use with the CounterFit Virtual IoT Device app',
+    description='Connection library for use with the CounterFit Virtual IoT Device app',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Jim Bennett',

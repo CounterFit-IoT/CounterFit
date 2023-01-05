@@ -2,7 +2,7 @@
 
 # In this example:
 # We will create a circuit where, when a button is pressed, we will check the current temperature
-# If the recorded temperature is under 38 celcius, the relay will be activated
+# If the recorded temperature is under 38 celsius, the relay will be activated
 
 
 # PIN 1: Button

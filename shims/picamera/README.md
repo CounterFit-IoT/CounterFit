@@ -29,7 +29,7 @@ To use these shims, you will need to install [CounterFit](https://github.com/Cou
     CounterFitConnection.init('127.0.0.1', 5000)
     ```
 
-* Write your Picamers code as usual.
+* Write your Picamera code as usual.
 
     For example, to capture an image as a JPEG:
 

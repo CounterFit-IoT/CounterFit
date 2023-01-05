@@ -1,7 +1,7 @@
 # Relay controlled by temperature sensor and button sample
 
 This sample shows how to use the CounterFit Grove shims to simulate a relay controlled by a temperature sensor and button setup.
-The temperature value is read whenever the button is pressed, and the relay is activated if the temperature is under 38 degrees celcius.
+The temperature value is read whenever the button is pressed, and the relay is activated if the temperature is under 38 degrees celsius.
 
 ## Setup
 

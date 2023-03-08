@@ -5,10 +5,8 @@ setup(
     install_requires=[
         "Flask==2.1.2",
         "Flask-SocketIO==5.2.0",
-        "eventlet==0.33.1",
-        "beautifulsoup4==4.9.3",
-        "lxml==4.9.0"
+        "eventlet==0.33.3"
     ],
-    tests_require=['pytest==4.4.1'],
+    tests_require=['pytest==7.2.2'],
     test_suite='tests',
 )

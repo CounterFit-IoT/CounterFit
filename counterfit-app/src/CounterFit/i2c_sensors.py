@@ -5,6 +5,7 @@ import random
 
 from CounterFit.sensors import SensorBase, SensorType
 
+
 class I2CSensorBase(SensorBase):
     @staticmethod
     def sensor_type() -> SensorType:
@@ -26,10 +27,11 @@ class I2CSensorBase(SensorBase):
 
     @property
     def address(self) -> str:
-        return f'0x{int(self.port):02x}'
+        return f"0x{int(self.port):02x}"
 
-class FloatI2CSensorBase(I2CSensorBase):    
-    def __init__(self, port:str, valid_min:float, valid_max:float):
+
+class FloatI2CSensorBase(I2CSensorBase):
+    def __init__(self, port: str, valid_min: float, valid_max: float):
         super().__init__(port)
 
         self.__valid_min = valid_min
@@ -99,8 +101,8 @@ class FloatI2CSensorBase(I2CSensorBase):
         return self.__valid_max
 
 
-class IntegerI2CSensorBase(I2CSensorBase):    
-    def __init__(self, port:str, valid_min:int, valid_max:int):
+class IntegerI2CSensorBase(I2CSensorBase):
+    def __init__(self, port: str, valid_min: int, valid_max: int):
         super().__init__(port)
 
         self.__valid_min = valid_min
@@ -169,22 +171,24 @@ class IntegerI2CSensorBase(I2CSensorBase):
     def valid_max(self) -> int:
         return self.__valid_max
 
-#pylint: disable=C0103
+
+# pylint: disable=C0103
 class DistanceUnit(Enum):
     Millimeter = 1
 
+
 class DistanceSensor(IntegerI2CSensorBase):
-    def __init__(self, port:str, unit):
-        if isinstance (unit, str):
+    def __init__(self, port: str, unit):
+        if isinstance(unit, str):
             unit = DistanceUnit[unit]
 
         self.__unit = unit
-        
+
         super().__init__(port, 0, 999999)
 
     @staticmethod
     def sensor_name() -> str:
-        return 'Distance'
+        return "Distance"
 
     @property
     def unit(self) -> str:

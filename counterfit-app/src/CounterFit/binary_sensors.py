@@ -4,13 +4,14 @@ import io
 
 from CounterFit.sensors import SensorBase, SensorType
 
+
 class BinarySensorBase(SensorBase):
-    def __init__(self, name:str):
+    def __init__(self, name: str):
         super().__init__(name)
         self.__value = io.BytesIO()
         self._next_repeat_time = None
         self._value_position = 0
-    
+
     @staticmethod
     def sensor_type() -> SensorType:
         return SensorType.BINARY
@@ -22,30 +23,32 @@ class BinarySensorBase(SensorBase):
 
     @property
     def id(self) -> str:
-        return self.port.replace('/', '').replace(' ', '')
+        return self.port.replace("/", "").replace(" ", "")
 
     @property
     def value(self) -> io.BytesIO:
         return self.__value
-    
+
     @value.setter
-    def value(self, val:io.BytesIO):
+    def value(self, val: io.BytesIO):
         self.__value = val
+
 
 class CameraImageSource(Enum):
     FILE = 1
     WEBCAM = 2
 
+
 class CameraSensor(BinarySensorBase):
-    def __init__(self, name:str):
+    def __init__(self, name: str):
         super().__init__(name)
         self.__image_source = CameraImageSource.FILE
-        self.__image_file_name = ''
-        self.__web_cam_device_id = ''
-    
+        self.__image_file_name = ""
+        self.__web_cam_device_id = ""
+
     @staticmethod
     def sensor_name() -> str:
-        return 'Camera'
+        return "Camera"
 
     @property
     def image_source(self) -> CameraImageSource:

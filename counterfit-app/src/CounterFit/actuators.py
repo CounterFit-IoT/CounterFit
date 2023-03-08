@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 
+
 class ActuatorType(Enum):
     FLOAT = 1
     BOOLEAN = 2
 
+
 class ActuatorBase(ABC):
-    def __init__(self, port:str):
+    def __init__(self, port: str):
         self.__port = port
-    
+
     @staticmethod
     @abstractmethod
     def actuator_name() -> str:
@@ -24,13 +26,13 @@ class ActuatorBase(ABC):
         return self.__port
 
     @property
-    #pylint: disable=invalid-name
+    # pylint: disable=invalid-name
     def id(self) -> str:
         return self.__port
 
-class FloatActuatorBase(ActuatorBase):
-    def __init__(self, port:str):
 
+class FloatActuatorBase(ActuatorBase):
+    def __init__(self, port: str):
         super().__init__(port)
         self.__value = 0
 
@@ -51,9 +53,9 @@ class FloatActuatorBase(ActuatorBase):
     def value(self, val: float):
         self.__value = val
 
-class BooleanActuatorBase(ActuatorBase):
-    def __init__(self, port:str):
 
+class BooleanActuatorBase(ActuatorBase):
+    def __init__(self, port: str):
         super().__init__(port)
 
         self.__value = False
@@ -75,20 +77,22 @@ class BooleanActuatorBase(ActuatorBase):
     def value(self, val: bool):
         self.__value = val
 
+
 class RelayActuator(BooleanActuatorBase):
     @staticmethod
     def actuator_name() -> str:
-        return 'Relay'
+        return "Relay"
+
 
 class LedActuator(BooleanActuatorBase):
-    def __init__(self, port:str):
+    def __init__(self, port: str):
         super().__init__(port)
         self.__color = "#FF0000"
 
     @staticmethod
     def actuator_name() -> str:
-        return 'LED'
-    
+        return "LED"
+
     @property
     def color(self) -> str:
         return self.__color

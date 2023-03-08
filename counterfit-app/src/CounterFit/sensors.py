@@ -3,6 +3,7 @@ from enum import Enum
 from typing import List
 import random
 
+
 class SensorType(Enum):
     FLOAT = 1
     INTEGER = 2
@@ -11,11 +12,12 @@ class SensorType(Enum):
     BINARY = 5
     I2C = 6
 
+
 class SensorBase(ABC):
-    def __init__(self, port:str):
+    def __init__(self, port: str):
         self.__port = port
         self._random = False
-    
+
     @staticmethod
     @abstractmethod
     def sensor_name() -> str:
@@ -27,14 +29,14 @@ class SensorBase(ABC):
         pass
 
     @property
-    #pylint: disable=invalid-name
+    # pylint: disable=invalid-name
     def id(self) -> str:
         return self.__port
 
     @property
     def port(self) -> str:
         return self.__port
-    
+
     @property
     def random(self) -> bool:
         return self._random
@@ -43,17 +45,19 @@ class SensorBase(ABC):
     def random(self, val: bool):
         self._random = val
 
-#pylint: disable=C0103
+
+# pylint: disable=C0103
 class DefaultUnit(Enum):
     NoUnits = 1
 
-#pylint: disable=C0103
+
+# pylint: disable=C0103
 class PercentUnit(Enum):
     Percent = 1
 
-class FloatSensorBase(SensorBase):
-    def __init__(self, port:str, valid_min:float, valid_max:float):
 
+class FloatSensorBase(SensorBase):
+    def __init__(self, port: str, valid_min: float, valid_max: float):
         super().__init__(port)
 
         self.__valid_min = valid_min
@@ -122,9 +126,9 @@ class FloatSensorBase(SensorBase):
     def valid_max(self) -> float:
         return self.__valid_max
 
-class IntegerSensorBase(SensorBase):
-    def __init__(self, port:str, valid_min:int, valid_max:int):
 
+class IntegerSensorBase(SensorBase):
+    def __init__(self, port: str, valid_min: int, valid_max: int):
         super().__init__(port)
 
         self.__valid_min = valid_min
@@ -193,9 +197,9 @@ class IntegerSensorBase(SensorBase):
     def valid_max(self) -> int:
         return self.__valid_max
 
-class BooleanSensorBase(SensorBase):
-    def __init__(self, port:str):
 
+class BooleanSensorBase(SensorBase):
+    def __init__(self, port: str):
         super().__init__(port)
 
         self.value = False
@@ -220,15 +224,17 @@ class BooleanSensorBase(SensorBase):
     def value(self, val: bool):
         self.__value = val
 
-#pylint: disable=C0103
+
+# pylint: disable=C0103
 class TemperatureUnit(Enum):
     Celsius = 1
     Fahrenheit = 2
     Kelvin = 3
 
+
 class TemperatureSensor(FloatSensorBase):
-    def __init__(self, port:str, unit):
-        if isinstance (unit, str):
+    def __init__(self, port: str, unit):
+        if isinstance(unit, str):
             unit = TemperatureUnit[unit]
 
         self.__unit = unit
@@ -239,12 +245,12 @@ class TemperatureSensor(FloatSensorBase):
             valid_min = -459.67
         else:
             valid_min = 0
-        
+
         super().__init__(port, valid_min, 999999999.0)
 
     @staticmethod
     def sensor_name() -> str:
-        return 'Temperature'
+        return "Temperature"
 
     @property
     def unit(self) -> str:
@@ -252,11 +258,16 @@ class TemperatureSensor(FloatSensorBase):
 
     @staticmethod
     def sensor_units() -> List[str]:
-        return [TemperatureUnit.Celsius.name, TemperatureUnit.Fahrenheit.name, TemperatureUnit.Kelvin.name]
+        return [
+            TemperatureUnit.Celsius.name,
+            TemperatureUnit.Fahrenheit.name,
+            TemperatureUnit.Kelvin.name,
+        ]
+
 
 class HumiditySensor(FloatSensorBase):
-    def __init__(self, port:str, unit):
-        if isinstance (unit, str):
+    def __init__(self, port: str, unit):
+        if isinstance(unit, str):
             unit = PercentUnit[unit]
 
         self.__unit = unit
@@ -265,7 +276,7 @@ class HumiditySensor(FloatSensorBase):
 
     @staticmethod
     def sensor_name() -> str:
-        return 'Humidity'
+        return "Humidity"
 
     @property
     def unit(self) -> str:
@@ -275,16 +286,18 @@ class HumiditySensor(FloatSensorBase):
     def sensor_units() -> List[str]:
         return [PercentUnit.Percent.name]
 
-#pylint: disable=C0103,C0102
+
+# pylint: disable=C0103,C0102
 class PressureUnit(Enum):
     kPa = 1
     torr = 2
     atm = 3
     bar = 4
 
+
 class PressureSensor(FloatSensorBase):
-    def __init__(self, port:str, unit):
-        if isinstance (unit, str):
+    def __init__(self, port: str, unit):
+        if isinstance(unit, str):
             unit = PressureUnit[unit]
 
         self.__unit = unit
@@ -293,7 +306,7 @@ class PressureSensor(FloatSensorBase):
 
     @staticmethod
     def sensor_name() -> str:
-        return 'Pressure'
+        return "Pressure"
 
     @property
     def unit(self) -> str:
@@ -301,11 +314,17 @@ class PressureSensor(FloatSensorBase):
 
     @staticmethod
     def sensor_units() -> List[str]:
-        return [PressureUnit.kPa.name, PressureUnit.torr.name, PressureUnit.atm.name, PressureUnit.bar.name]
+        return [
+            PressureUnit.kPa.name,
+            PressureUnit.torr.name,
+            PressureUnit.atm.name,
+            PressureUnit.bar.name,
+        ]
+
 
 class AnalogSensor(IntegerSensorBase):
-    #pylint: disable=W0613
-    def __init__(self, port:str, unit):
+    # pylint: disable=W0613
+    def __init__(self, port: str, unit):
         super().__init__(port, 0, 1023)
 
     @staticmethod
@@ -321,30 +340,35 @@ class AnalogSensor(IntegerSensorBase):
     def sensor_units() -> List[str]:
         return [DefaultUnit.NoUnits.name]
 
+
 class LightSensor(AnalogSensor):
     @staticmethod
     def sensor_name() -> str:
-        return 'Light'
+        return "Light"
+
 
 class UVSensor(AnalogSensor):
     @staticmethod
     def sensor_name() -> str:
-        return 'UV'
+        return "UV"
+
 
 class IRSensor(AnalogSensor):
     @staticmethod
     def sensor_name() -> str:
-        return 'IR'
+        return "IR"
+
 
 class SoilMoistureSensor(AnalogSensor):
     @staticmethod
     def sensor_name() -> str:
-        return 'Soil Moisture'
+        return "Soil Moisture"
+
 
 class ButtonSensor(BooleanSensorBase):
     @staticmethod
     def sensor_name() -> str:
-        return 'Button'
+        return "Button"
 
     @staticmethod
     def sensor_units() -> List[str]:
